@@ -28,7 +28,24 @@ const Booking = props => {
     generateData("Heinfjordstua", 25, days),
     generateData("Hognabu", 6, days),
     generateData("Holmsåkoia", 20, days),
-    generateData("Holvassgamma", 8, days)
+    generateData("Holvassgamma", 8, days),
+    generateData("Iglbu", 10, days),
+    generateData("Kamtjønnkoia", 6, days),
+    generateData("Kåsen", 4, days),
+    generateData("Lyngli", 13, days),
+    generateData("Lynhøgen", 5, days),
+    generateData("Mevasskoia", 5, days),
+    generateData("Mortenskåten", 2, days),
+    generateData("Nicokoia", 8, days),
+    generateData("Rindalsløa", 4, days),
+    generateData("Selbukåten", 2, days),
+    generateData("Sonvasskoia", 8, days),
+    generateData("Stabburet", 2, days),
+    generateData("Stakkslettbua", 11, days),
+    generateData("Telin", 9, days),
+    generateData("Taagabu", 6, days),
+    generateData("Vekvessætra", 20, days),
+    generateData("Øvensenget", 8, days)
   ];
 
   const dataColumns = [
