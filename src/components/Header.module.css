@@ -1,0 +1,28 @@
+.headertext {
+  margin-top: 0;
+  padding: 20px;
+  margin-bottom: 0;
+}
+
+.nav {
+  margin: 0;
+  padding-left: 20;
+}
+
+.nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.nav ul li {
+  float: left;
+}
+
+.link {
+  display: block;
+  text-align: center;
+  padding: 14px 20px;
+  text-decoration: none;
+}
