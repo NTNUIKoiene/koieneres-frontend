@@ -5,9 +5,10 @@ const Booking = props => {
   if (!props.auth.isAuthenticated) {
     props.history.push("/");
   }
+  console.log(props);
   return (
     <div>
-      <Header />
+      <Header currentPage={props.location.pathname} />
       Booking
     </div>
   );

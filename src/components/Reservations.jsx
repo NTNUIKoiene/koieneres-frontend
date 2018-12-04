@@ -7,7 +7,7 @@ const Reservations = props => {
   }
   return (
     <div>
-      <Header />
+      <Header currentPage={props.location.pathname} />
       Res
     </div>
   );
