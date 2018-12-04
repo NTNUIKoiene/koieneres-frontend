@@ -1,0 +1,27 @@
+.backgroundimage {
+  background-image: url("https://farm2.staticflickr.com/1917/44798530855_e3ee8cff43_z_d.jpg");
+  background-size: cover;
+  background-position: center;
+  filter: blur(2px);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.loginscreen {
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  background-color: white;
+  margin-top: 20vh;
+  width: 25vw;
+  padding: 20px;
+}
+
+.button {
+  margin-top: 10px;
+  float: right;
+}
