@@ -5,7 +5,7 @@ import Booking from "./components/Booking";
 import Reservations from "./components/Reservations";
 
 const fakeAuth = {
-  isAuthenticated: false,
+  isAuthenticated: true,
   authenticate(cb) {
     console.log("Logging in");
     this.isAuthenticated = true;
