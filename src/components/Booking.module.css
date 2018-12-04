@@ -10,3 +10,35 @@
 .cell {
   text-align: center;
 }
+
+.fullCell {
+  composes: cell;
+  color: #a80000;
+}
+
+.partialCell {
+  composes: cell;
+  color: #ff8c00;
+}
+
+.selectedCell {
+  composes: cell;
+  background-color: blue;
+}
+
+.tableContainer {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.dateContainer {
+  display: flex;
+}
+
+.dateContainer Label {
+  margin-right: 10px;
+}
+
+.dateContainer Label:last-of-type {
+  margin-left: 10px;
+}
