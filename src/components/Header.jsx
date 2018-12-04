@@ -4,6 +4,7 @@ import { ColorClassNames, FontClassNames } from "@uifabric/styling";
 import styles from "./Header.module.css";
 
 const Header = props => {
+  const { currentPage } = props;
   return (
     <div>
       <h1
@@ -28,6 +29,9 @@ const Header = props => {
                 ColorClassNames.themeLighterAlt,
                 ColorClassNames.themeLightBackgroundHover,
                 styles.link,
+                currentPage === "/booking/"
+                  ? ColorClassNames.themeTertiaryBackground
+                  : "",
               ].join(" ")}
               to="/booking/"
             >
@@ -39,6 +43,9 @@ const Header = props => {
               className={[
                 ColorClassNames.themeLighterAlt,
                 ColorClassNames.themeLightBackgroundHover,
+                currentPage === "/reservations/"
+                  ? ColorClassNames.themeTertiaryBackground
+                  : "",
                 styles.link,
               ].join(" ")}
               to="/reservations/"

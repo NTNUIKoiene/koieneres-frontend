@@ -1,0 +1,12 @@
+.section {
+  margin: 10px;
+}
+
+.right {
+  float: right;
+  margin-left: 5px;
+}
+
+.cell {
+  text-align: center;
+}

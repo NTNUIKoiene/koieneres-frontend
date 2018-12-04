@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { loadTheme } from "office-ui-fabric-react";
+import { initializeIcons } from "@uifabric/icons";
 
 loadTheme({
   palette: {
@@ -31,6 +32,7 @@ loadTheme({
     white: "#ffffff",
   },
 });
+initializeIcons();
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
