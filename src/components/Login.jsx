@@ -6,7 +6,7 @@ import { ColorClassNames, FontClassNames } from "@uifabric/styling";
 const Login = props => {
   const onLogIn = () => {
     props.auth.authenticate();
-    props.history.push("/booking");
+    props.history.push("/booking/");
   };
 
   return (

@@ -3,48 +3,73 @@ import Header from "./Header";
 import styles from "./Booking.module.css";
 import { Prompt } from "react-router-dom";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
-import cabindates from "../data/cabindates";
+import { generateData } from "../data/cabindates";
 import {
   TextField,
   PrimaryButton,
   DefaultButton,
   DetailsList,
   CheckboxVisibility,
+  TooltipHost
 } from "office-ui-fabric-react";
+import moment from "moment";
 
 const Booking = props => {
   if (!props.auth.isAuthenticated) {
     props.history.push("/");
   }
 
-  const columns = cabindates[0].status.map(d => {
-    return {
-      key: d.date.format("YYYY-MM-DD"),
-      name: d.date.format("ddd DD.MM"),
+  const days = 13;
+  const resData = [
+    generateData("Flåkoia", 11, days),
+    generateData("Fosenkoia", 10, days),
+    generateData("Heinfjordstua", 25, days),
+    generateData("Hognabu", 6, days),
+    generateData("Holmsåkoia", 20, days),
+    generateData("Holvassgamma", 8, days)
+  ];
+
+  const dataColumns = [
+    {
+      key: "cabinname",
+      name: "",
+      minWidth: 100,
+      maxWidth: 260,
+      isRowHeader: true,
+      onRender: item => {
+        return <div>{item.cabinName}</div>;
+      }
+    }
+  ];
+
+  const day = moment();
+  for (let i = 0; i < days; i++) {
+    const key = day.format("YYYY-MM-DD");
+    dataColumns.push({
+      key,
+      name: day.format("ddd DD.MM"),
       minWidth: 60,
       maxWidth: 60,
       onRender: item => {
-        const count = item.status.filter(
-          s => s.date.format("YYYY-MM-DD") === d.date.format("YYYY-MM-DD")
-        )[0].occupied;
+        const count = item[key];
+        let cellStyle = styles.cell;
+        if (count === item.size) {
+          cellStyle = styles.fullCell;
+        } else if (count > 0) {
+          cellStyle = styles.partialCell;
+        }
+        const tooltipText = `${item.cabinName}, ${key}`;
         return (
-          <div className={styles.cell}>
-            {count} / {item.size}
-          </div>
+          <TooltipHost content={tooltipText}>
+            <div className={cellStyle}>
+              {count} / {item.size}
+            </div>
+          </TooltipHost>
         );
-      },
-    };
-  });
-
-  columns.unshift({
-    key: "cabinname",
-    name: "",
-    minWidth: 60,
-    isPadded: true,
-    onRender: item => {
-      return <div>{item.cabin}</div>;
-    },
-  });
+      }
+    });
+    day.add(1, "day");
+  }
 
   return (
     <React.Fragment>
@@ -63,11 +88,13 @@ const Booking = props => {
           >
             Velg koie og dato
           </h2>
-          <DetailsList
-            columns={columns}
-            items={cabindates}
-            checkboxVisibility={CheckboxVisibility.hidden}
-          />
+          <div className={styles.tableContainer}>
+            <DetailsList
+              columns={dataColumns}
+              items={resData}
+              checkboxVisibility={CheckboxVisibility.hidden}
+            />
+          </div>
         </section>
         <section className={styles.section}>
           <h2

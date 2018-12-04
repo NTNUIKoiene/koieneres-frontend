@@ -10,3 +10,23 @@
 .cell {
   text-align: center;
 }
+
+.fullCell {
+  composes: cell;
+  color: #a80000;
+}
+
+.partialCell {
+  composes: cell;
+  color: #ff8c00;
+}
+
+.selectedCell {
+  composes: cell;
+  background-color: blue;
+}
+
+.tableContainer {
+  max-width: 1200px;
+  margin: auto;
+}
