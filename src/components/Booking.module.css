@@ -30,3 +30,15 @@
   max-width: 1200px;
   margin: auto;
 }
+
+.dateContainer {
+  display: flex;
+}
+
+.dateContainer Label {
+  margin-right: 10px;
+}
+
+.dateContainer Label:last-of-type {
+  margin-left: 10px;
+}

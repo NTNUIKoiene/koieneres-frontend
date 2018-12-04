@@ -10,7 +10,9 @@ import {
   DefaultButton,
   DetailsList,
   CheckboxVisibility,
-  TooltipHost
+  TooltipHost,
+  DatePicker,
+  Label
 } from "office-ui-fabric-react";
 import moment from "moment";
 
@@ -88,6 +90,12 @@ const Booking = props => {
           >
             Velg koie og dato
           </h2>
+          <div className={styles.dateContainer}>
+            <Label htmlFor="fromDate">Vis datoer fra</Label>
+            <DatePicker id="fromDate" />
+            <Label htmlFor="toDate">til</Label>
+            <DatePicker id="toDate" />
+          </div>
           <div className={styles.tableContainer}>
             <DetailsList
               columns={dataColumns}
