@@ -5,7 +5,6 @@ import styles from "./Header.module.css";
 
 const Header = props => {
   const { currentPage } = props;
-  console.log(currentPage);
   return (
     <div>
       <h1
