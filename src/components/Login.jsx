@@ -4,7 +4,11 @@ import { TextField, PrimaryButton } from "office-ui-fabric-react";
 import { ColorClassNames, FontClassNames } from "@uifabric/styling";
 
 const Login = props => {
-  console.log(props);
+  const onLogIn = () => {
+    props.auth.authenticate();
+    props.history.push("/booking");
+  };
+
   return (
     <div className={styles.loginscreen}>
       <div className={styles.backgroundimage} />
@@ -18,7 +22,9 @@ const Login = props => {
         </h1>
         <TextField label="Brukernavn" />
         <TextField type="password" label="Passord" />
-        <PrimaryButton className={styles.button}>Logg inn</PrimaryButton>
+        <PrimaryButton className={styles.button} onClick={onLogIn}>
+          Logg inn
+        </PrimaryButton>
       </div>
     </div>
   );

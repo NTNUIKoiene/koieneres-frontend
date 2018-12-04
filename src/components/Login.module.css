@@ -17,11 +17,18 @@
 .container {
   background-color: white;
   margin-top: 20vh;
-  width: 25vw;
   padding: 20px;
 }
 
 .button {
   margin-top: 10px;
   float: right;
+}
+@media only screen and (min-width: 600px) {
+  .container {
+    background-color: white;
+    margin-top: 20vh;
+    width: 25vw;
+    padding: 20px;
+  }
 }
