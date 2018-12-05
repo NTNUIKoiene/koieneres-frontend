@@ -226,6 +226,7 @@ const Booking = props => {
 
   const onSubmitReservation = () => {
     const payload = { membershipNumber, name, phone, email };
+    return payload;
   };
 
   return (
