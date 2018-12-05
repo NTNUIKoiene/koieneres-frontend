@@ -58,9 +58,16 @@ const Booking = props => {
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
   const [selectedDates, setSelectedDates] = useState([]);
 
-  const onCellClick = (cabinName, dateKey) => {
-    const newState = [...selectedDates, { cabinName, dateKey }];
-    setSelectedDates(newState);
+  const onCellClick = (cabinName, dateKey, isSelected) => {
+    if (isSelected) {
+      const newState = selectedDates.filter(
+        sd => sd.cabinName !== cabinName || sd.dateKey !== dateKey
+      );
+      setSelectedDates(newState);
+    } else {
+      const newState = [...selectedDates, { cabinName, dateKey }];
+      setSelectedDates(newState);
+    }
   };
 
   // Produce columns for data view
@@ -94,10 +101,10 @@ const Booking = props => {
         } else if (count > 0) {
           cellStyle = styles.partialCell;
         }
-        const isMatching = selectedDates.filter(
+        const isSelected = selectedDates.filter(
           sd => sd.cabinName === item.cabinName && key === sd.dateKey
         ).length;
-        if (isMatching) {
+        if (isSelected) {
           cellStyle = styles.selectedCell;
         }
 
@@ -106,7 +113,7 @@ const Booking = props => {
           <TooltipHost content={tooltipText}>
             <div
               className={cellStyle}
-              onClick={() => onCellClick(item.cabinName, key)}
+              onClick={() => onCellClick(item.cabinName, key, isSelected)}
             >
               {count} / {item.size}
             </div>
