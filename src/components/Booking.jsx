@@ -1,10 +1,10 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./Header";
 import styles from "./Booking.module.css";
 import { Prompt } from "react-router-dom";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
-import { generateData } from "../data/cabindates";
+import { getData } from "../data/cabindates";
 import { datePickerStrings } from "../utils/DatePickerStrings";
 import { addDays, format, differenceInCalendarDays } from "date-fns";
 import nb from "date-fns/locale/nb";
@@ -17,34 +17,13 @@ import {
   TooltipHost,
   DatePicker,
   Label,
-  DayOfWeek
+  DayOfWeek,
+  Shimmer,
+  MessageBar,
+  MessageBarType,
+  Toggle
 } from "office-ui-fabric-react";
-
-const resData = [
-  generateData("Flåkoia", 11, 13),
-  generateData("Fosenkoia", 10, 13),
-  generateData("Heinfjordstua", 25, 13),
-  generateData("Hognabu", 6, 13),
-  generateData("Holmsåkoia", 20, 13),
-  generateData("Holvassgamma", 8, 13),
-  generateData("Iglbu", 10, 13),
-  generateData("Kamtjønnkoia", 6, 13),
-  generateData("Kåsen", 4, 13),
-  generateData("Lyngli", 13, 13),
-  generateData("Lynhøgen", 5, 13),
-  generateData("Mevasskoia", 5, 13),
-  generateData("Mortenskåten", 2, 13),
-  generateData("Nicokoia", 8, 13),
-  generateData("Rindalsløa", 4, 13),
-  generateData("Selbukåten", 2, 13),
-  generateData("Sonvasskoia", 8, 13),
-  generateData("Stabburet", 2, 13),
-  generateData("Stakkslettbua", 11, 13),
-  generateData("Telin", 9, 13),
-  generateData("Taagabu", 6, 13),
-  generateData("Vekvessætra", 20, 13),
-  generateData("Øvensenget", 8, 13)
-];
+import BedSelector from "./booking/BedSelector";
 
 const Booking = props => {
   // Redirect to front page if not authenticated
@@ -52,7 +31,25 @@ const Booking = props => {
     props.history.push("/");
   }
 
-  // State
+  // General state
+  const [errorText, setErrorText] = useState("");
+
+  /*
+      MATRIX SECTION
+  */
+  const [reservationData, setReservationData] = useState([]);
+  useEffect(
+    () => {
+      getData()
+        .then(data => {
+          setReservationData(data);
+        })
+        .catch(() => {
+          setErrorText("Klarte ikke å hente reservasjonsdata!");
+        });
+    },
+    [setReservationData]
+  );
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(addDays(new Date(), 13));
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
@@ -80,7 +77,12 @@ const Booking = props => {
         filteredDates = [];
       }
 
-      filteredDates.push({ cabinName, dateKey });
+      filteredDates.push({ cabinName, dateKey, members: 0, nonMembers: 0 });
+      filteredDates.sort((a, b) => {
+        if (a.dateKey < b.dateKey) return -1;
+        if (a.dateKey > b.dateKey) return 1;
+        return 0;
+      });
       setSelectedDates(filteredDates);
     }
   };
@@ -139,6 +141,94 @@ const Booking = props => {
   }
   dataColumns.push({ key: "blank", name: "", minWidth: 0 });
 
+  /*
+      RESERVATION DETAIL SECTION
+  */
+  const selectedCabinName =
+    (selectedDates[0] && selectedDates[0].cabinName) || "Ingen koie valgt";
+  const selectedCabinResData =
+    reservationData.filter(
+      cabinData => cabinData.cabinName === selectedCabinName
+    )[0] || {};
+  const numberOfBeds = selectedCabinResData.size || 0;
+  const [sameForAllDates, setSameForAllDates] = useState(true);
+
+  const updateBedsOnDate = (dateKey, value, isMember, all = false) => {
+    const newSelectedDates = [];
+    if (all) {
+      selectedDates.forEach(date => {
+        if (isMember) {
+          newSelectedDates.push({
+            ...date,
+            members: value
+          });
+        } else {
+          newSelectedDates.push({
+            ...date,
+            nonMembers: value
+          });
+        }
+      });
+    } else {
+      selectedDates.forEach(date => {
+        if (date.dateKey === dateKey) {
+          //Update
+          if (isMember) {
+            newSelectedDates.push({
+              ...date,
+              members: value
+            });
+          } else {
+            newSelectedDates.push({
+              ...date,
+              nonMembers: value
+            });
+          }
+        } else {
+          newSelectedDates.push(date);
+        }
+      });
+    }
+    setSelectedDates(newSelectedDates);
+  };
+  const bedSelectors = sameForAllDates ? (
+    <BedSelector
+      date={selectedDates[0]}
+      updateBedsOnDate={updateBedsOnDate}
+      title=" "
+      maxSpaces={
+        numberOfBeds -
+        Math.max(...selectedDates.map(d => selectedCabinResData[d.dateKey]))
+      }
+      updateAll={true}
+    />
+  ) : (
+    selectedDates.map((d, k) => {
+      const maxSpaces = numberOfBeds - selectedCabinResData[d.dateKey];
+      return (
+        <BedSelector
+          date={d}
+          key={k}
+          updateBedsOnDate={updateBedsOnDate}
+          maxSpaces={maxSpaces}
+        />
+      );
+    })
+  );
+
+  /*
+      CONTACT INFORMATION SECTION
+  */
+  const [membershipNumber, setMembershipNumber] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+
+  const onSubmitReservation = () => {
+    const payload = { membershipNumber, name, phone, email };
+    return payload;
+  };
+
   return (
     <React.Fragment>
       <Prompt
@@ -148,6 +238,16 @@ const Booking = props => {
 
       <div>
         <Header currentPage={props.location.pathname} />
+        {errorText.length > 0 && (
+          <MessageBar
+            messageBarType={MessageBarType.error}
+            isMultiline={false}
+            onDismiss={() => setErrorText("")}
+            dismissButtonAriaLabel="Close"
+          >
+            {errorText}
+          </MessageBar>
+        )}
         <section className={styles.section}>
           <h2
             className={[FontClassNames.xLarge, ColorClassNames.themeDark].join(
@@ -180,8 +280,10 @@ const Booking = props => {
           <div className={styles.tableContainer}>
             <DetailsList
               columns={dataColumns}
-              items={resData}
+              items={reservationData}
               checkboxVisibility={CheckboxVisibility.hidden}
+              onRenderMissingItem={() => <Shimmer />}
+              enableShimmer={true}
             />
           </div>
         </section>
@@ -193,6 +295,19 @@ const Booking = props => {
           >
             Reservasjonsdetaljer
           </h2>
+          <Label>
+            Koie: <b>{selectedCabinName}</b>
+          </Label>
+          <Label>
+            Antall sengeplasser: <b>{numberOfBeds}</b>
+          </Label>
+          <Toggle
+            checked={sameForAllDates}
+            onText="Samme antall overnattinger hver dag"
+            offText="Samme antall overnattinger hver dag"
+            onChange={() => setSameForAllDates(!sameForAllDates)}
+          />
+          <div className={styles.bedSelectorContainer}>{bedSelectors}</div>
         </section>
         <section className={styles.section}>
           <h2
@@ -202,13 +317,33 @@ const Booking = props => {
           >
             Kontaktinformasjon
           </h2>
-          <TextField required label="Medlemsnummer (NTNUI / BIL)" />
-          <TextField required label="Navn" />
-          <TextField required label="Telefon" />
-          <TextField required label="Epost" />
+          <TextField
+            required
+            label="Medlemsnummer (NTNUI / BIL)"
+            value={membershipNumber}
+            onChange={e => setMembershipNumber(e.target.value)}
+          />
+          <TextField
+            required
+            label="Navn"
+            value={name}
+            onChange={e => setName(e.target.value)}
+          />
+          <TextField
+            required
+            label="Telefon"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+          />
+          <TextField
+            required
+            label="Epost"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
         </section>
         <section className={styles.section}>
-          <PrimaryButton className={styles.right}>
+          <PrimaryButton className={styles.right} onClick={onSubmitReservation}>
             Utfør Reservasjon
           </PrimaryButton>
           <DefaultButton className={styles.right}>Avbryt</DefaultButton>

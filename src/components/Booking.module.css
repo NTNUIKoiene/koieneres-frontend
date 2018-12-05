@@ -1,5 +1,5 @@
 .section {
-  margin: 10px;
+  margin: 25px;
 }
 
 .right {
@@ -44,4 +44,17 @@
 
 .dateContainer label:last-of-type {
   margin-left: 10px;
+}
+
+.fieldWithButtonContainer {
+  display: flex;
+  width: 150px;
+}
+
+.bedSelectorContainer {
+  display: flex;
+}
+
+.bedSelector {
+  margin-left: 15px;
 }
