@@ -9,6 +9,7 @@
 
 .cell {
   text-align: center;
+  cursor: pointer;
 }
 
 .fullCell {
@@ -23,7 +24,9 @@
 
 .selectedCell {
   composes: cell;
-  background-color: blue;
+  background-color: #006726;
+  color: white;
+  border-radius: 5px;
 }
 
 .tableContainer {
@@ -35,10 +38,10 @@
   display: flex;
 }
 
-.dateContainer Label {
+.dateContainer label {
   margin-right: 10px;
 }
 
-.dateContainer Label:last-of-type {
+.dateContainer label:last-of-type {
   margin-left: 10px;
 }

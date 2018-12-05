@@ -20,6 +20,32 @@ import {
   DayOfWeek
 } from "office-ui-fabric-react";
 
+const resData = [
+  generateData("Flåkoia", 11, 13),
+  generateData("Fosenkoia", 10, 13),
+  generateData("Heinfjordstua", 25, 13),
+  generateData("Hognabu", 6, 13),
+  generateData("Holmsåkoia", 20, 13),
+  generateData("Holvassgamma", 8, 13),
+  generateData("Iglbu", 10, 13),
+  generateData("Kamtjønnkoia", 6, 13),
+  generateData("Kåsen", 4, 13),
+  generateData("Lyngli", 13, 13),
+  generateData("Lynhøgen", 5, 13),
+  generateData("Mevasskoia", 5, 13),
+  generateData("Mortenskåten", 2, 13),
+  generateData("Nicokoia", 8, 13),
+  generateData("Rindalsløa", 4, 13),
+  generateData("Selbukåten", 2, 13),
+  generateData("Sonvasskoia", 8, 13),
+  generateData("Stabburet", 2, 13),
+  generateData("Stakkslettbua", 11, 13),
+  generateData("Telin", 9, 13),
+  generateData("Taagabu", 6, 13),
+  generateData("Vekvessætra", 20, 13),
+  generateData("Øvensenget", 8, 13)
+];
+
 const Booking = props => {
   // Redirect to front page if not authenticated
   if (!props.auth.isAuthenticated) {
@@ -30,34 +56,12 @@ const Booking = props => {
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(addDays(new Date(), 13));
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
+  const [selectedDates, setSelectedDates] = useState([]);
 
-  const days = 13;
-
-  const resData = [
-    generateData("Flåkoia", 11, days),
-    generateData("Fosenkoia", 10, days),
-    generateData("Heinfjordstua", 25, days),
-    generateData("Hognabu", 6, days),
-    generateData("Holmsåkoia", 20, days),
-    generateData("Holvassgamma", 8, days),
-    generateData("Iglbu", 10, days),
-    generateData("Kamtjønnkoia", 6, days),
-    generateData("Kåsen", 4, days),
-    generateData("Lyngli", 13, days),
-    generateData("Lynhøgen", 5, days),
-    generateData("Mevasskoia", 5, days),
-    generateData("Mortenskåten", 2, days),
-    generateData("Nicokoia", 8, days),
-    generateData("Rindalsløa", 4, days),
-    generateData("Selbukåten", 2, days),
-    generateData("Sonvasskoia", 8, days),
-    generateData("Stabburet", 2, days),
-    generateData("Stakkslettbua", 11, days),
-    generateData("Telin", 9, days),
-    generateData("Taagabu", 6, days),
-    generateData("Vekvessætra", 20, days),
-    generateData("Øvensenget", 8, days)
-  ];
+  const onCellClick = (cabinName, dateKey) => {
+    const newState = [...selectedDates, { cabinName, dateKey }];
+    setSelectedDates(newState);
+  };
 
   // Produce columns for data view
   const dataColumns = [
@@ -90,10 +94,20 @@ const Booking = props => {
         } else if (count > 0) {
           cellStyle = styles.partialCell;
         }
+        const isMatching = selectedDates.filter(
+          sd => sd.cabinName === item.cabinName && key === sd.dateKey
+        ).length;
+        if (isMatching) {
+          cellStyle = styles.selectedCell;
+        }
+
         const tooltipText = `${item.cabinName}, ${key}`;
         return (
           <TooltipHost content={tooltipText}>
-            <div className={cellStyle}>
+            <div
+              className={cellStyle}
+              onClick={() => onCellClick(item.cabinName, key)}
+            >
               {count} / {item.size}
             </div>
           </TooltipHost>
