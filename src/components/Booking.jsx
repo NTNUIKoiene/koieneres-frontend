@@ -21,7 +21,6 @@ import {
   Shimmer,
   MessageBar,
   MessageBarType,
-  MaskedTextField,
   Toggle
 } from "office-ui-fabric-react";
 
@@ -77,7 +76,12 @@ const Booking = props => {
         filteredDates = [];
       }
 
-      filteredDates.push({ cabinName, dateKey });
+      filteredDates.push({ cabinName, dateKey, members: 0, nonMembers: 0 });
+      filteredDates.sort((a, b) => {
+        if (a.dateKey < b.dateKey) return -1;
+        if (a.dateKey > b.dateKey) return 1;
+        return 0;
+      });
       setSelectedDates(filteredDates);
     }
   };
@@ -147,26 +151,32 @@ const Booking = props => {
     )[0] || {};
   const numberOfBeds = selectedCabinResData.size || 0;
   const [sameForAllDates, setSameForAllDates] = useState(true);
-  const [memberBedsOnDate, setMemberBedsOnDate] = useState({});
-  const [nonMemberBedsOnDate, setNonMemberBedsOnDate] = useState({});
 
+  console.log(selectedDates);
   const updateBedsOnDate = (dateKey, value, isMember) => {
-    if (isMember) {
-      const newState = {
-        ...memberBedsOnDate
-      };
-      newState[dateKey] = value;
-      setMemberBedsOnDate(newState);
-    } else {
-      const newState = {
-        ...nonMemberBedsOnDate
-      };
-      newState[dateKey] = value;
-      setNonMemberBedsOnDate(newState);
-    }
+    const newSelectedDates = [];
+    selectedDates.forEach(date => {
+      if (date.dateKey === dateKey) {
+        //Update
+        if (isMember) {
+          newSelectedDates.push({
+            ...date,
+            members: value
+          });
+        } else {
+          newSelectedDates.push({
+            ...date,
+            nonMembers: value
+          });
+        }
+      } else {
+        newSelectedDates.push(date);
+      }
+    });
+    setSelectedDates(newSelectedDates);
   };
 
-  const bedSelectors = selectedDates.sort().map((d, k) => {
+  const bedSelectors = selectedDates.map((d, k) => {
     const maxSpaces = numberOfBeds - selectedCabinResData[d.dateKey];
     return (
       <div key={k}>
@@ -176,7 +186,7 @@ const Booking = props => {
           <TextField
             id="medlem"
             type="number"
-            value={memberBedsOnDate[d.dateKey]}
+            value={d.members}
             onChange={e => updateBedsOnDate(d.dateKey, e.target.value, true)}
           />
           <DefaultButton
@@ -190,7 +200,7 @@ const Booking = props => {
           <TextField
             id="ikkemedlem"
             type="number"
-            value={nonMemberBedsOnDate[d.dateKey] || 0}
+            value={d.nonMembers}
             onChange={e => updateBedsOnDate(d.dateKey, e.target.value, false)}
           />
           <DefaultButton
