@@ -1,9 +1,13 @@
 import React from "react";
+import { useState } from "react";
 import Header from "./Header";
 import styles from "./Booking.module.css";
 import { Prompt } from "react-router-dom";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
 import { generateData } from "../data/cabindates";
+import { datePickerStrings } from "../utils/DatePickerStrings";
+import { addDays, format, differenceInCalendarDays } from "date-fns";
+import nb from "date-fns/locale/nb";
 import {
   TextField,
   PrimaryButton,
@@ -12,16 +16,23 @@ import {
   CheckboxVisibility,
   TooltipHost,
   DatePicker,
-  Label
+  Label,
+  DayOfWeek
 } from "office-ui-fabric-react";
-import moment from "moment";
 
 const Booking = props => {
+  // Redirect to front page if not authenticated
   if (!props.auth.isAuthenticated) {
     props.history.push("/");
   }
 
+  // State
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(addDays(new Date(), 13));
+  const deltaDays = differenceInCalendarDays(toDate, fromDate);
+
   const days = 13;
+
   const resData = [
     generateData("Flåkoia", 11, days),
     generateData("Fosenkoia", 10, days),
@@ -48,6 +59,7 @@ const Booking = props => {
     generateData("Øvensenget", 8, days)
   ];
 
+  // Produce columns for data view
   const dataColumns = [
     {
       key: "cabinname",
@@ -61,12 +73,13 @@ const Booking = props => {
     }
   ];
 
-  const day = moment();
-  for (let i = 0; i < days; i++) {
-    const key = day.format("YYYY-MM-DD");
+  // Produce a column for each day in range
+  for (let i = 0; i < deltaDays; i++) {
+    const day = addDays(fromDate, i);
+    const key = format(day, "YYYY-MM-DD");
     dataColumns.push({
       key,
-      name: day.format("ddd DD.MM"),
+      name: format(day, "ddd DD.MM", { locale: nb }),
       minWidth: 60,
       maxWidth: 60,
       onRender: item => {
@@ -87,8 +100,8 @@ const Booking = props => {
         );
       }
     });
-    day.add(1, "day");
   }
+  dataColumns.push({ key: "blank", name: "", minWidth: 0 });
 
   return (
     <React.Fragment>
@@ -109,9 +122,24 @@ const Booking = props => {
           </h2>
           <div className={styles.dateContainer}>
             <Label htmlFor="fromDate">Vis datoer fra</Label>
-            <DatePicker id="fromDate" />
+            <DatePicker
+              id="fromDate"
+              value={fromDate}
+              onSelectDate={d => setFromDate(d)}
+              strings={datePickerStrings}
+              firstDayOfWeek={DayOfWeek.Monday}
+              formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
+            />
             <Label htmlFor="toDate">til</Label>
-            <DatePicker id="toDate" />
+            <DatePicker
+              id="toDate"
+              value={toDate}
+              onSelectDate={d => setToDate(d)}
+              minDate={fromDate}
+              string={datePickerStrings}
+              firstDayOfWeek={DayOfWeek.Monday}
+              formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
+            />
           </div>
           <div className={styles.tableContainer}>
             <DetailsList
