@@ -23,6 +23,7 @@ import {
   MessageBarType,
   Toggle
 } from "office-ui-fabric-react";
+import BedSelector from "./booking/BedSelector";
 
 const Booking = props => {
   // Redirect to front page if not authenticated
@@ -152,12 +153,10 @@ const Booking = props => {
   const numberOfBeds = selectedCabinResData.size || 0;
   const [sameForAllDates, setSameForAllDates] = useState(true);
 
-  console.log(selectedDates);
-  const updateBedsOnDate = (dateKey, value, isMember) => {
+  const updateBedsOnDate = (dateKey, value, isMember, all = false) => {
     const newSelectedDates = [];
-    selectedDates.forEach(date => {
-      if (date.dateKey === dateKey) {
-        //Update
+    if (all) {
+      selectedDates.forEach(date => {
         if (isMember) {
           newSelectedDates.push({
             ...date,
@@ -169,49 +168,53 @@ const Booking = props => {
             nonMembers: value
           });
         }
-      } else {
-        newSelectedDates.push(date);
-      }
-    });
+      });
+    } else {
+      selectedDates.forEach(date => {
+        if (date.dateKey === dateKey) {
+          //Update
+          if (isMember) {
+            newSelectedDates.push({
+              ...date,
+              members: value
+            });
+          } else {
+            newSelectedDates.push({
+              ...date,
+              nonMembers: value
+            });
+          }
+        } else {
+          newSelectedDates.push(date);
+        }
+      });
+    }
     setSelectedDates(newSelectedDates);
   };
-
-  const bedSelectors = selectedDates.map((d, k) => {
-    const maxSpaces = numberOfBeds - selectedCabinResData[d.dateKey];
-    return (
-      <div key={k}>
-        <Label>{d.dateKey}</Label>
-        <Label htmlFor="medlem">Antall NTNUI-medlemmer</Label>
-        <div className={styles.fieldWithButtonContainer}>
-          <TextField
-            id="medlem"
-            type="number"
-            value={d.members}
-            onChange={e => updateBedsOnDate(d.dateKey, e.target.value, true)}
-          />
-          <DefaultButton
-            onClick={() => updateBedsOnDate(d.dateKey, maxSpaces, true)}
-          >
-            {maxSpaces}
-          </DefaultButton>
-        </div>
-        <Label htmlFor="ikkemedlem">Antall BIL-/ikkemedlemmer</Label>
-        <div className={styles.fieldWithButtonContainer}>
-          <TextField
-            id="ikkemedlem"
-            type="number"
-            value={d.nonMembers}
-            onChange={e => updateBedsOnDate(d.dateKey, e.target.value, false)}
-          />
-          <DefaultButton
-            onClick={() => updateBedsOnDate(d.dateKey, maxSpaces, false)}
-          >
-            {maxSpaces}
-          </DefaultButton>
-        </div>
-      </div>
-    );
-  });
+  const bedSelectors = sameForAllDates ? (
+    <BedSelector
+      date={selectedDates[0]}
+      updateBedsOnDate={updateBedsOnDate}
+      title=" "
+      maxSpaces={
+        numberOfBeds -
+        Math.max(...selectedDates.map(d => selectedCabinResData[d.dateKey]))
+      }
+      updateAll={true}
+    />
+  ) : (
+    selectedDates.map((d, k) => {
+      const maxSpaces = numberOfBeds - selectedCabinResData[d.dateKey];
+      return (
+        <BedSelector
+          date={d}
+          key={k}
+          updateBedsOnDate={updateBedsOnDate}
+          maxSpaces={maxSpaces}
+        />
+      );
+    })
+  );
 
   /*
       CONTACT INFORMATION SECTION

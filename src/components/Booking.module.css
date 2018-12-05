@@ -54,3 +54,7 @@
 .bedSelectorContainer {
   display: flex;
 }
+
+.bedSelector {
+  margin-left: 15px;
+}
