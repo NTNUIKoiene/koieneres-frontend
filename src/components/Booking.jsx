@@ -17,7 +17,8 @@ import {
   TooltipHost,
   DatePicker,
   Label,
-  DayOfWeek
+  DayOfWeek,
+  Shimmer
 } from "office-ui-fabric-react";
 
 const resData = [
@@ -52,11 +53,19 @@ const Booking = props => {
     props.history.push("/");
   }
 
-  // State
+  // State for cabin date matrix
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(addDays(new Date(), 13));
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
   const [selectedDates, setSelectedDates] = useState([]);
+
+  // State for reservation details
+
+  // State for contact information
+  const [membershipNumber, setMembershipNumber] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
 
   const onCellClick = (cabinName, dateKey, isSelected) => {
     if (isSelected) {
@@ -83,6 +92,12 @@ const Booking = props => {
       filteredDates.push({ cabinName, dateKey });
       setSelectedDates(filteredDates);
     }
+  };
+
+  const onSubmitReservation = () => {
+    const payload = { membershipNumber, name, phone, email };
+
+    console.log(payload);
   };
 
   // Produce columns for data view
@@ -182,6 +197,8 @@ const Booking = props => {
               columns={dataColumns}
               items={resData}
               checkboxVisibility={CheckboxVisibility.hidden}
+              onRenderMissingItem={() => <Shimmer />}
+              enableShimmer={true}
             />
           </div>
         </section>
@@ -202,13 +219,33 @@ const Booking = props => {
           >
             Kontaktinformasjon
           </h2>
-          <TextField required label="Medlemsnummer (NTNUI / BIL)" />
-          <TextField required label="Navn" />
-          <TextField required label="Telefon" />
-          <TextField required label="Epost" />
+          <TextField
+            required
+            label="Medlemsnummer (NTNUI / BIL)"
+            value={membershipNumber}
+            onChange={e => setMembershipNumber(e.target.value)}
+          />
+          <TextField
+            required
+            label="Navn"
+            value={name}
+            onChange={e => setName(e.target.value)}
+          />
+          <TextField
+            required
+            label="Telefon"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+          />
+          <TextField
+            required
+            label="Epost"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
         </section>
         <section className={styles.section}>
-          <PrimaryButton className={styles.right}>
+          <PrimaryButton className={styles.right} onClick={onSubmitReservation}>
             Utfør Reservasjon
           </PrimaryButton>
           <DefaultButton className={styles.right}>Avbryt</DefaultButton>
