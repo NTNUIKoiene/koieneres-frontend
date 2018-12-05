@@ -65,8 +65,11 @@ const Booking = props => {
       );
       setSelectedDates(newState);
     } else {
-      const newState = [...selectedDates, { cabinName, dateKey }];
-      setSelectedDates(newState);
+      const filteredDates = selectedDates.filter(
+        sd => sd.cabinName === cabinName
+      );
+      filteredDates.push({ cabinName, dateKey });
+      setSelectedDates(filteredDates);
     }
   };
 
