@@ -6,6 +6,7 @@ import { Prompt } from "react-router-dom";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
 import { getData } from "../data/cabindates";
 import { datePickerStrings } from "../utils/DatePickerStrings";
+import { getUpdatedSelectedDates } from "../utils/Utils";
 import { addDays, format, differenceInCalendarDays } from "date-fns";
 import nb from "date-fns/locale/nb";
 import {
@@ -56,35 +57,9 @@ const Booking = props => {
   const [selectedDates, setSelectedDates] = useState([]);
 
   const onCellClick = (cabinName, dateKey, isSelected) => {
-    if (isSelected) {
-      const newState = selectedDates.filter(
-        sd => sd.cabinName !== cabinName || sd.dateKey !== dateKey
-      );
-      setSelectedDates(newState);
-    } else {
-      let filteredDates = selectedDates.filter(
-        sd => sd.cabinName === cabinName
-      );
-      if (
-        !filteredDates.some(
-          sd =>
-            Math.abs(
-              differenceInCalendarDays(new Date(dateKey), new Date(sd.dateKey))
-            ) === 1
-        ) &&
-        filteredDates.length > 0
-      ) {
-        filteredDates = [];
-      }
-
-      filteredDates.push({ cabinName, dateKey, members: 0, nonMembers: 0 });
-      filteredDates.sort((a, b) => {
-        if (a.dateKey < b.dateKey) return -1;
-        if (a.dateKey > b.dateKey) return 1;
-        return 0;
-      });
-      setSelectedDates(filteredDates);
-    }
+    setSelectedDates(
+      getUpdatedSelectedDates(cabinName, dateKey, isSelected, selectedDates)
+    );
   };
 
   // Produce columns for data view
