@@ -22,7 +22,8 @@ import {
   Shimmer,
   MessageBar,
   MessageBarType,
-  Toggle
+  Toggle,
+  Checkbox
 } from "office-ui-fabric-react";
 import BedSelector from "./booking/BedSelector";
 
@@ -130,8 +131,9 @@ const Booking = props => {
 
   const updateBedsOnDate = (dateKey, value, isMember, all = false) => {
     const newSelectedDates = [];
-    if (all) {
-      selectedDates.forEach(date => {
+    selectedDates.forEach(date => {
+      if (date.dateKey === dateKey || all) {
+        //Update
         if (isMember) {
           newSelectedDates.push({
             ...date,
@@ -143,27 +145,10 @@ const Booking = props => {
             nonMembers: value
           });
         }
-      });
-    } else {
-      selectedDates.forEach(date => {
-        if (date.dateKey === dateKey) {
-          //Update
-          if (isMember) {
-            newSelectedDates.push({
-              ...date,
-              members: value
-            });
-          } else {
-            newSelectedDates.push({
-              ...date,
-              nonMembers: value
-            });
-          }
-        } else {
-          newSelectedDates.push(date);
-        }
-      });
-    }
+      } else {
+        newSelectedDates.push(date);
+      }
+    });
     setSelectedDates(newSelectedDates);
   };
   const bedSelectors = sameForAllDates ? (
@@ -276,10 +261,9 @@ const Booking = props => {
           <Label>
             Antall sengeplasser: <b>{numberOfBeds}</b>
           </Label>
-          <Toggle
+          <Checkbox
             checked={sameForAllDates}
-            onText="Samme antall overnattinger hver dag"
-            offText="Samme antall overnattinger hver dag"
+            label="Samme antall overnattinger hver dag"
             onChange={() => setSameForAllDates(!sameForAllDates)}
           />
           <div className={styles.bedSelectorContainer}>{bedSelectors}</div>
