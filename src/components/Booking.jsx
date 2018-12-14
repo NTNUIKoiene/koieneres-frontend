@@ -111,6 +111,11 @@ const Booking = props => {
   const [sameForAllDates, setSameForAllDates] = useState(true);
 
   const updateBedsOnDate = (dateKey, value, isMember, all = false) => {
+    let valueToSet = value;
+    if (isNaN(valueToSet)) {
+      valueToSet = 0;
+    }
+
     const newSelectedDates = [];
     selectedDates.forEach(date => {
       if (date.dateKey === dateKey || all) {
@@ -118,12 +123,12 @@ const Booking = props => {
         if (isMember) {
           newSelectedDates.push({
             ...date,
-            members: value
+            members: valueToSet
           });
         } else {
           newSelectedDates.push({
             ...date,
-            nonMembers: value
+            nonMembers: valueToSet
           });
         }
       } else {
