@@ -103,4 +103,16 @@
 
 .bedSelector {
   margin-left: 15px;
+  margin-top: 5px;
+  padding: 5px;
+  border: 1px solid white;
+}
+
+.bedSelector:first-of-type {
+  margin-left: 0;
+}
+
+.bedSelectorOverbooked {
+  composes: bedSelector;
+  border: 1px solid #ff8c00;
 }
