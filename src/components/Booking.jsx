@@ -25,6 +25,7 @@ import {
 } from "office-ui-fabric-react";
 import BedSelector from "./booking/BedSelector";
 import Cell from "./booking/Cell";
+import Help from "./booking/Help";
 
 const Booking = props => {
   // Redirect to front page if not authenticated
@@ -178,7 +179,10 @@ const Booking = props => {
       />
 
       <div>
-        <Header currentPage={props.location.pathname} />
+        <Header
+          currentPage={props.location.pathname}
+          helpComponent={<Help />}
+        />
         {errorText.length > 0 && (
           <MessageBar
             messageBarType={MessageBarType.error}

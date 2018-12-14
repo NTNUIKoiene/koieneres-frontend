@@ -1,10 +1,13 @@
 import React from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ColorClassNames, FontClassNames } from "@uifabric/styling";
 import styles from "./Header.module.css";
+import { IconButton, Modal } from "office-ui-fabric-react";
 
 const Header = props => {
-  const { currentPage } = props;
+  const { currentPage, helpComponent } = props;
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   return (
     <div>
       <h1
@@ -12,7 +15,7 @@ const Header = props => {
           FontClassNames.xxLarge,
           ColorClassNames.white,
           ColorClassNames.themeDarkBackground,
-          styles.headertext,
+          styles.headertext
         ].join(" ")}
       >
         NTNUI Koienes Reservasjonssystem
@@ -31,7 +34,7 @@ const Header = props => {
                 styles.link,
                 currentPage === "/booking/"
                   ? ColorClassNames.themeTertiaryBackground
-                  : "",
+                  : ""
               ].join(" ")}
               to="/booking/"
             >
@@ -46,15 +49,38 @@ const Header = props => {
                 currentPage === "/reservations/"
                   ? ColorClassNames.themeTertiaryBackground
                   : "",
-                styles.link,
+                styles.link
               ].join(" ")}
               to="/reservations/"
             >
               Reservasjoner
             </Link>
           </li>
+          {helpComponent && (
+            <li className={styles.rightLink}>
+              <IconButton
+                className={styles.helpButton}
+                iconProps={{ iconName: "Help" }}
+                ariaLabel="Help"
+                onClick={() => setModalIsOpen(true)}
+              />
+            </li>
+          )}
         </ul>
       </nav>
+      <Modal
+        isOpen={modalIsOpen}
+        onDismiss={() => setModalIsOpen(false)}
+        containerClassName={styles.modal}
+      >
+        <IconButton
+          className={styles.closeButton}
+          iconProps={{ iconName: "ChromeClose" }}
+          ariaLabel="Close"
+          onClick={() => setModalIsOpen(false)}
+        />
+        {helpComponent}
+      </Modal>
     </div>
   );
 };
