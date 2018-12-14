@@ -32,8 +32,8 @@
 }
 
 .helpButton {
-  height: 49px;
-  color: white;
+  height: 49px !important;
+  color: white !important;
 }
 
 .modal {
