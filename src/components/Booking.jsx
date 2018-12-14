@@ -22,7 +22,8 @@ import {
   Shimmer,
   MessageBar,
   MessageBarType,
-  Toggle
+  Toggle,
+  Checkbox
 } from "office-ui-fabric-react";
 import BedSelector from "./booking/BedSelector";
 
@@ -260,10 +261,9 @@ const Booking = props => {
           <Label>
             Antall sengeplasser: <b>{numberOfBeds}</b>
           </Label>
-          <Toggle
+          <Checkbox
             checked={sameForAllDates}
-            onText="Samme antall overnattinger hver dag"
-            offText="Samme antall overnattinger hver dag"
+            label="Samme antall overnattinger hver dag"
             onChange={() => setSameForAllDates(!sameForAllDates)}
           />
           <div className={styles.bedSelectorContainer}>{bedSelectors}</div>
