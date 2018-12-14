@@ -109,6 +109,13 @@ const Booking = props => {
     )[0] || {};
   const numberOfBeds = selectedCabinResData.size || 0;
   const [sameForAllDates, setSameForAllDates] = useState(true);
+  const isOverBooked = selectedDates
+    .map(
+      sd =>
+        sd.members + sd.nonMembers >
+        numberOfBeds - selectedCabinResData[sd.dateKey]
+    )
+    .includes(true);
 
   const updateBedsOnDate = (dateKey, value, isMember, all = false) => {
     let valueToSet = value;
@@ -248,6 +255,14 @@ const Booking = props => {
             >
               Reservasjonsdetaljer
             </h2>
+            {isOverBooked && (
+              <MessageBar
+                messageBarType={MessageBarType.warning}
+                isMultiline={false}
+              >
+                En eller flere av datoene du har valgt er overbooket.
+              </MessageBar>
+            )}
             <Label>
               Koie: <b>{selectedCabinName}</b>
             </Label>
