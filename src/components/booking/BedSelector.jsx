@@ -18,6 +18,7 @@ const BedSelector = ({
         <TextField
           id="medlem"
           type="number"
+          min="0"
           value={date.members}
           onChange={e =>
             updateBedsOnDate(date.dateKey, e.target.value, true, updateAll)
@@ -36,6 +37,7 @@ const BedSelector = ({
         <TextField
           id="ikkemedlem"
           type="number"
+          min="0"
           value={date.nonMembers}
           onChange={e =>
             updateBedsOnDate(date.dateKey, e.target.value, false, updateAll)
