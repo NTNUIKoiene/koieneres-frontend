@@ -15,17 +15,16 @@ import {
   DefaultButton,
   DetailsList,
   CheckboxVisibility,
-  TooltipHost,
   DatePicker,
   Label,
   DayOfWeek,
   Shimmer,
   MessageBar,
   MessageBarType,
-  Toggle,
   Checkbox
 } from "office-ui-fabric-react";
 import BedSelector from "./booking/BedSelector";
+import Cell from "./booking/Cell";
 
 const Booking = props => {
   // Redirect to front page if not authenticated
@@ -86,33 +85,14 @@ const Booking = props => {
       name: format(day, "ddd DD.MM", { locale: nb }),
       minWidth: 60,
       maxWidth: 60,
-      onRender: item => {
-        const count = item[key];
-        let cellStyle = styles.cell;
-        if (count === item.size) {
-          cellStyle = styles.fullCell;
-        } else if (count > 0) {
-          cellStyle = styles.partialCell;
-        }
-        const isSelected = selectedDates.filter(
-          sd => sd.cabinName === item.cabinName && key === sd.dateKey
-        ).length;
-        if (isSelected) {
-          cellStyle = styles.selectedCell;
-        }
-
-        const tooltipText = `${item.cabinName}, ${key}`;
-        return (
-          <TooltipHost content={tooltipText}>
-            <div
-              className={cellStyle}
-              onClick={() => onCellClick(item.cabinName, key, isSelected)}
-            >
-              {count} / {item.size}
-            </div>
-          </TooltipHost>
-        );
-      }
+      onRender: item => (
+        <Cell
+          item={item}
+          day={key}
+          selectedDates={selectedDates}
+          onCellClick={onCellClick}
+        />
+      )
     });
   }
   dataColumns.push({ key: "blank", name: "", minWidth: 0 });
@@ -151,6 +131,7 @@ const Booking = props => {
     });
     setSelectedDates(newSelectedDates);
   };
+
   const bedSelectors = sameForAllDates ? (
     <BedSelector
       date={selectedDates[0]}
@@ -257,6 +238,9 @@ const Booking = props => {
           </h2>
           <Label>
             Koie: <b>{selectedCabinName}</b>
+          </Label>
+          <Label>
+            Datoer: <b>{selectedDates.map(sd => sd.dateKey).join(", ")}</b>
           </Label>
           <Label>
             Antall sengeplasser: <b>{numberOfBeds}</b>
