@@ -25,6 +25,7 @@ import {
 } from "office-ui-fabric-react";
 import BedSelector from "./booking/BedSelector";
 import Cell from "./booking/Cell";
+import Help from "./booking/Help";
 
 const Booking = props => {
   // Redirect to front page if not authenticated
@@ -178,7 +179,10 @@ const Booking = props => {
       />
 
       <div>
-        <Header currentPage={props.location.pathname} />
+        <Header
+          currentPage={props.location.pathname}
+          helpComponent={<Help />}
+        />
         {errorText.length > 0 && (
           <MessageBar
             messageBarType={MessageBarType.error}
@@ -189,108 +193,116 @@ const Booking = props => {
             {errorText}
           </MessageBar>
         )}
-        <section className={styles.section}>
-          <h2
-            className={[FontClassNames.xLarge, ColorClassNames.themeDark].join(
-              " "
-            )}
-          >
-            Velg koie og dato
-          </h2>
-          <div className={styles.dateContainer}>
-            <Label htmlFor="fromDate">Vis datoer fra</Label>
-            <DatePicker
-              id="fromDate"
-              value={fromDate}
-              onSelectDate={d => setFromDate(d)}
-              strings={datePickerStrings}
-              firstDayOfWeek={DayOfWeek.Monday}
-              formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
+        <div className={styles.mainContent}>
+          <section className={styles.tableSection}>
+            <h2
+              className={[
+                FontClassNames.xLarge,
+                ColorClassNames.themeDark
+              ].join(" ")}
+            >
+              Velg koie og dato
+            </h2>
+            <div className={styles.dateContainer}>
+              <Label htmlFor="fromDate">Vis datoer fra</Label>
+              <DatePicker
+                id="fromDate"
+                value={fromDate}
+                onSelectDate={d => setFromDate(d)}
+                strings={datePickerStrings}
+                firstDayOfWeek={DayOfWeek.Monday}
+                formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
+              />
+              <Label htmlFor="toDate">til</Label>
+              <DatePicker
+                id="toDate"
+                value={toDate}
+                onSelectDate={d => setToDate(d)}
+                minDate={fromDate}
+                string={datePickerStrings}
+                firstDayOfWeek={DayOfWeek.Monday}
+                formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
+              />
+            </div>
+            <div className={styles.tableContainer}>
+              <DetailsList
+                columns={dataColumns}
+                items={reservationData}
+                checkboxVisibility={CheckboxVisibility.hidden}
+                onRenderMissingItem={() => <Shimmer />}
+                enableShimmer={true}
+              />
+            </div>
+          </section>
+          <section className={styles.bedsSection}>
+            <h2
+              className={[
+                FontClassNames.xLarge,
+                ColorClassNames.themeDark
+              ].join(" ")}
+            >
+              Reservasjonsdetaljer
+            </h2>
+            <Label>
+              Koie: <b>{selectedCabinName}</b>
+            </Label>
+            <Label>
+              Datoer: <b>{selectedDates.map(sd => sd.dateKey).join(", ")}</b>
+            </Label>
+            <Label>
+              Antall sengeplasser: <b>{numberOfBeds}</b>
+            </Label>
+            <Checkbox
+              checked={sameForAllDates}
+              label="Samme antall overnattinger hver dag"
+              onChange={() => setSameForAllDates(!sameForAllDates)}
             />
-            <Label htmlFor="toDate">til</Label>
-            <DatePicker
-              id="toDate"
-              value={toDate}
-              onSelectDate={d => setToDate(d)}
-              minDate={fromDate}
-              string={datePickerStrings}
-              firstDayOfWeek={DayOfWeek.Monday}
-              formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
+            <div className={styles.bedSelectorContainer}>{bedSelectors}</div>
+          </section>
+          <section className={styles.infoSection}>
+            <h2
+              className={[
+                FontClassNames.xLarge,
+                ColorClassNames.themeDark
+              ].join(" ")}
+            >
+              Kontaktinformasjon
+            </h2>
+            <TextField
+              required
+              label="Medlemsnummer (NTNUI / BIL)"
+              value={membershipNumber}
+              onChange={e => setMembershipNumber(e.target.value)}
             />
-          </div>
-          <div className={styles.tableContainer}>
-            <DetailsList
-              columns={dataColumns}
-              items={reservationData}
-              checkboxVisibility={CheckboxVisibility.hidden}
-              onRenderMissingItem={() => <Shimmer />}
-              enableShimmer={true}
+            <TextField
+              required
+              label="Navn"
+              value={name}
+              onChange={e => setName(e.target.value)}
             />
-          </div>
-        </section>
-        <section className={styles.section}>
-          <h2
-            className={[FontClassNames.xLarge, ColorClassNames.themeDark].join(
-              " "
-            )}
-          >
-            Reservasjonsdetaljer
-          </h2>
-          <Label>
-            Koie: <b>{selectedCabinName}</b>
-          </Label>
-          <Label>
-            Datoer: <b>{selectedDates.map(sd => sd.dateKey).join(", ")}</b>
-          </Label>
-          <Label>
-            Antall sengeplasser: <b>{numberOfBeds}</b>
-          </Label>
-          <Checkbox
-            checked={sameForAllDates}
-            label="Samme antall overnattinger hver dag"
-            onChange={() => setSameForAllDates(!sameForAllDates)}
-          />
-          <div className={styles.bedSelectorContainer}>{bedSelectors}</div>
-        </section>
-        <section className={styles.section}>
-          <h2
-            className={[FontClassNames.xLarge, ColorClassNames.themeDark].join(
-              " "
-            )}
-          >
-            Kontaktinformasjon
-          </h2>
-          <TextField
-            required
-            label="Medlemsnummer (NTNUI / BIL)"
-            value={membershipNumber}
-            onChange={e => setMembershipNumber(e.target.value)}
-          />
-          <TextField
-            required
-            label="Navn"
-            value={name}
-            onChange={e => setName(e.target.value)}
-          />
-          <TextField
-            required
-            label="Telefon"
-            value={phone}
-            onChange={e => setPhone(e.target.value)}
-          />
-          <TextField
-            required
-            label="Epost"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-          />
-        </section>
-        <section className={styles.section}>
-          <PrimaryButton className={styles.right} onClick={onSubmitReservation}>
-            Utfør Reservasjon
-          </PrimaryButton>
-          <DefaultButton className={styles.right}>Avbryt</DefaultButton>
-        </section>
+            <TextField
+              required
+              label="Telefon"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+            />
+            <TextField
+              required
+              label="Epost"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+            />
+          </section>
+          <section className={styles.bottomRow}>
+            <PrimaryButton
+              className={styles.right}
+              onClick={onSubmitReservation}
+            >
+              Utfør Reservasjon
+            </PrimaryButton>
+            <DefaultButton className={styles.right}>Avbryt</DefaultButton>
+          </section>
+        </div>
       </div>
     </React.Fragment>
   );

@@ -26,3 +26,21 @@
   padding: 14px 20px;
   text-decoration: none;
 }
+
+.rightLink {
+  float: right !important;
+}
+
+.helpButton {
+  height: 49px;
+  color: white;
+}
+
+.modal {
+  padding: 20px;
+  min-width: 50vw;
+}
+
+.closeButton {
+  float: right;
+}
