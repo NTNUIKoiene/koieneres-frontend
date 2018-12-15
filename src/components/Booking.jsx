@@ -183,10 +183,17 @@ const Booking = props => {
     return payload;
   };
 
+  const hasBeenEdited =
+    membershipNumber !== "" ||
+    name !== "" ||
+    phone !== "" ||
+    email !== "" ||
+    selectedDates.length > 0;
+
   return (
     <React.Fragment>
       <Prompt
-        when={false}
+        when={hasBeenEdited}
         message="Reservasjonen er ikke lagret, sikker på at du vil avbryte?"
       />
 
