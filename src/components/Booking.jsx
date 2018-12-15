@@ -103,10 +103,13 @@ const Booking = props => {
   */
   const selectedCabinName =
     (selectedDates[0] && selectedDates[0].cabinName) || "Ingen koie valgt";
+
   const selectedCabinResData =
     reservationData.filter(
       cabinData => cabinData.cabinName === selectedCabinName
     )[0] || {};
+  const memberPrice = selectedCabinResData.memberPrice || 0;
+  const nonMemberPrice = selectedCabinResData.nonMemberPrice || 0;
   const numberOfBeds = selectedCabinResData.size || 0;
   const [sameForAllDates, setSameForAllDates] = useState(true);
   const isOverBooked = selectedDates
@@ -278,6 +281,12 @@ const Booking = props => {
             </Label>
             <Label>
               Antall sengeplasser: <b>{numberOfBeds}</b>
+            </Label>
+            <Label>
+              Pris per natt per person:{" "}
+              <b>
+                {memberPrice}/{nonMemberPrice} NOK (medlem/ikke medlem)
+              </b>
             </Label>
             <Checkbox
               checked={sameForAllDates}
