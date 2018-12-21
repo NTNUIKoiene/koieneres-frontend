@@ -111,6 +111,11 @@ const Booking = props => {
   const memberPrice = selectedCabinResData.memberPrice || 0;
   const nonMemberPrice = selectedCabinResData.nonMemberPrice || 0;
   const numberOfBeds = selectedCabinResData.size || 0;
+  const totalPrice = selectedDates.reduce(
+    (acc, curr) =>
+      acc + curr.members * memberPrice + curr.nonMembers * nonMemberPrice,
+    0
+  );
   const [sameForAllDates, setSameForAllDates] = useState(true);
   const isOverBooked = selectedDates
     .map(
@@ -287,6 +292,9 @@ const Booking = props => {
               <b>
                 {memberPrice}/{nonMemberPrice} NOK (medlem/ikke medlem)
               </b>
+            </Label>
+            <Label>
+              Totalpris: <b>{totalPrice} NOK</b>
             </Label>
             <Checkbox
               checked={sameForAllDates}
