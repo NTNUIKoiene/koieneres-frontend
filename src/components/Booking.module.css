@@ -75,6 +75,13 @@
   border-radius: 5px;
 }
 
+.closedCell {
+  composes: cell;
+  color: black;
+  border: 2px dashed #ff1e31;
+  border-radius: 5px;
+}
+
 .tableContainer {
   margin: auto;
 }

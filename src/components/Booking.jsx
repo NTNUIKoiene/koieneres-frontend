@@ -62,7 +62,6 @@ const Booking = props => {
       getUpdatedSelectedDates(cabinName, dateKey, isSelected, selectedDates)
     );
   };
-
   // Produce columns for data view
   const dataColumns = [
     {
@@ -111,6 +110,11 @@ const Booking = props => {
   const memberPrice = selectedCabinResData.memberPrice || 0;
   const nonMemberPrice = selectedCabinResData.nonMemberPrice || 0;
   const numberOfBeds = selectedCabinResData.size || 0;
+  const totalPrice = selectedDates.reduce(
+    (acc, curr) =>
+      acc + curr.members * memberPrice + curr.nonMembers * nonMemberPrice,
+    0
+  );
   const [sameForAllDates, setSameForAllDates] = useState(true);
   const isOverBooked = selectedDates
     .map(
@@ -155,13 +159,15 @@ const Booking = props => {
       title=" "
       maxSpaces={
         numberOfBeds -
-        Math.max(...selectedDates.map(d => selectedCabinResData[d.dateKey]))
+        Math.max(
+          ...selectedDates.map(d => selectedCabinResData[d.dateKey].booked)
+        )
       }
       updateAll={true}
     />
   ) : (
     selectedDates.map((d, k) => {
-      const maxSpaces = numberOfBeds - selectedCabinResData[d.dateKey];
+      const maxSpaces = numberOfBeds - selectedCabinResData[d.dateKey].booked;
       return (
         <BedSelector
           date={d}
@@ -287,6 +293,9 @@ const Booking = props => {
               <b>
                 {memberPrice}/{nonMemberPrice} NOK (medlem/ikke medlem)
               </b>
+            </Label>
+            <Label>
+              Totalpris: <b>{totalPrice} NOK</b>
             </Label>
             <Checkbox
               checked={sameForAllDates}
