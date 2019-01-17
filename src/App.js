@@ -16,6 +16,10 @@ const fakeAuth = {
     this.isAuthenticated = false;
     setTimeout(cb, 100);
   },
+  userConfig: {
+    isBoard: false,
+    maxNights: 3
+  }
 };
 
 class App extends Component {

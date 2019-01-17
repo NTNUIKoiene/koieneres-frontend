@@ -33,6 +33,8 @@ const Booking = props => {
     props.history.push("/");
   }
 
+  const { userConfig } = props.auth;
+
   // General state
   const [errorText, setErrorText] = useState("");
 
@@ -59,7 +61,13 @@ const Booking = props => {
 
   const onCellClick = (cabinName, dateKey, isSelected) => {
     setSelectedDates(
-      getUpdatedSelectedDates(cabinName, dateKey, isSelected, selectedDates)
+      getUpdatedSelectedDates(
+        cabinName,
+        dateKey,
+        isSelected,
+        selectedDates,
+        userConfig.maxNights
+      )
     );
   };
   // Produce columns for data view
