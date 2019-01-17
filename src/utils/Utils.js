@@ -6,7 +6,8 @@ function getUpdatedSelectedDates(
   cabinName,
   dateKey,
   isSelected,
-  selectedDates
+  selectedDates,
+  maxNights
 ) {
   // Create new list of selected dates based on user action
   if (selectedDates.length === 0) {
@@ -34,6 +35,15 @@ function getUpdatedSelectedDates(
       ) !== 1
     ) {
       return [{ cabinName, dateKey, members: 0, nonMembers: 0 }];
+    }
+  }
+  // Ensure max number of nights is respected by removing first or last of list
+  console.log(newSelectedDates);
+  if (newSelectedDates.length > maxNights) {
+    if (newSelectedDates[0].dateKey === dateKey) {
+      return newSelectedDates.slice(0, newSelectedDates.length - 1);
+    } else {
+      return newSelectedDates.slice(1);
     }
   }
   return newSelectedDates;
