@@ -195,6 +195,12 @@ const Booking = props => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
 
+  /* 
+      EXTRA INFORMATION SECTION
+  */
+  const [shouldPay, setShouldPay] = useState(true);
+  const [comment, setComment] = useState("");
+
   const onSubmitReservation = () => {
     const payload = { membershipNumber, name, phone, email };
     return payload;
@@ -346,6 +352,30 @@ const Booking = props => {
               onChange={e => setEmail(e.target.value)}
             />
           </section>
+          {userConfig.isBoard && (
+            <section className={styles.styreSection}>
+              <h2
+                className={[
+                  FontClassNames.xLarge,
+                  ColorClassNames.themeDark
+                ].join(" ")}
+              >
+                Annen Informasjon
+              </h2>
+              <Checkbox
+                checked={shouldPay}
+                label="Koia skal betales for"
+                onChange={() => setShouldPay(!shouldPay)}
+              />
+              <TextField
+                required
+                label="Kommentar"
+                value={comment}
+                onChange={e => setComment(e.target.value)}
+              />
+            </section>
+          )}
+
           <section className={styles.bottomRow}>
             <PrimaryButton
               className={styles.right}
