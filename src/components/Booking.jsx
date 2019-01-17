@@ -120,7 +120,7 @@ const Booking = props => {
     .map(
       sd =>
         sd.members + sd.nonMembers >
-        numberOfBeds - selectedCabinResData[sd.dateKey]
+        numberOfBeds - selectedCabinResData[sd.dateKey].booked
     )
     .includes(true);
 
