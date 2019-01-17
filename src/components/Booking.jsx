@@ -62,7 +62,6 @@ const Booking = props => {
       getUpdatedSelectedDates(cabinName, dateKey, isSelected, selectedDates)
     );
   };
-
   // Produce columns for data view
   const dataColumns = [
     {
@@ -160,13 +159,15 @@ const Booking = props => {
       title=" "
       maxSpaces={
         numberOfBeds -
-        Math.max(...selectedDates.map(d => selectedCabinResData[d.dateKey]))
+        Math.max(
+          ...selectedDates.map(d => selectedCabinResData[d.dateKey].booked)
+        )
       }
       updateAll={true}
     />
   ) : (
     selectedDates.map((d, k) => {
-      const maxSpaces = numberOfBeds - selectedCabinResData[d.dateKey];
+      const maxSpaces = numberOfBeds - selectedCabinResData[d.dateKey].booked;
       return (
         <BedSelector
           date={d}

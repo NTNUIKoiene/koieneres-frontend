@@ -6,6 +6,10 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function randomBoolean(threshold = 0.5) {
+  return Math.random() >= threshold;
+}
+
 function generateData(cabinName, size, nDays = 13) {
   const data = {
     cabinName,
@@ -16,7 +20,7 @@ function generateData(cabinName, size, nDays = 13) {
   const today = moment();
   for (let i = 0; i < nDays; i++) {
     const key = today.format("YYYY-MM-DD");
-    data[key] = getRandomInt(0, size);
+    data[key] = { booked: getRandomInt(0, size), isClosed: randomBoolean(0.9) };
     today.add(1, "day");
   }
   return data;
