@@ -17,7 +17,7 @@ const fakeAuth = {
     setTimeout(cb, 100);
   },
   userConfig: {
-    isBoard: false,
+    isBoard: true,
     maxNights: 3
   }
 };

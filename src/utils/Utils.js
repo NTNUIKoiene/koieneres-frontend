@@ -38,13 +38,18 @@ function getUpdatedSelectedDates(
     }
   }
   // Ensure max number of nights is respected by removing first or last of list
-  console.log(newSelectedDates);
+
   if (newSelectedDates.length > maxNights) {
     if (newSelectedDates[0].dateKey === dateKey) {
       return newSelectedDates.slice(0, newSelectedDates.length - 1);
     } else {
       return newSelectedDates.slice(1);
     }
+  }
+  // Reset number of selected beds
+  for (let i = 0; i < newSelectedDates.length; i++) {
+    newSelectedDates[i].members = 0;
+    newSelectedDates[i].nonMembers = 0;
   }
   return newSelectedDates;
 }
