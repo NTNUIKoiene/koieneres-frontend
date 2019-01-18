@@ -21,11 +21,13 @@ import {
   Shimmer,
   MessageBar,
   MessageBarType,
-  Checkbox
+  Checkbox,
+  Modal
 } from "office-ui-fabric-react";
 import BedSelector from "./booking/BedSelector";
 import Cell from "./booking/Cell";
 import Help from "./booking/Help";
+import Confirmation from "./booking/Confirmation";
 
 const Booking = props => {
   // Redirect to front page if not authenticated
@@ -203,6 +205,7 @@ const Booking = props => {
 
   const onSubmitReservation = () => {
     const payload = { membershipNumber, name, phone, email };
+    setModalIsOpen(true);
     return payload;
   };
 
@@ -221,6 +224,8 @@ const Booking = props => {
     email !== "" &&
     totalPrice > 0 &&
     selectedDates.length > 0;
+
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
   return (
     <React.Fragment>
@@ -394,6 +399,25 @@ const Booking = props => {
             </PrimaryButton>
             <DefaultButton className={styles.right}>Avbryt</DefaultButton>
           </section>
+
+          <Modal
+            isOpen={modalIsOpen}
+            onDismiss={() => setModalIsOpen(false)}
+            containerClassName={styles.modal}
+          >
+            <Confirmation
+              selectedDates={selectedDates}
+              membershipNumber={membershipNumber}
+              name={name}
+              phone={phone}
+              email={email}
+              isBoard={userConfig.isBoard}
+              shouldPay={shouldPay}
+              comment={comment}
+              totalPrice={totalPrice}
+              onConfirm={null}
+            />
+          </Modal>
         </div>
       </div>
     </React.Fragment>
