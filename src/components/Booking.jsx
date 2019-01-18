@@ -211,6 +211,15 @@ const Booking = props => {
     name !== "" ||
     phone !== "" ||
     email !== "" ||
+    comment !== "" ||
+    selectedDates.length > 0;
+
+  const canSubmitReservation =
+    membershipNumber !== "" &&
+    name !== "" &&
+    phone !== "" &&
+    email !== "" &&
+    totalPrice > 0 &&
     selectedDates.length > 0;
 
   return (
@@ -368,7 +377,6 @@ const Booking = props => {
                 onChange={() => setShouldPay(!shouldPay)}
               />
               <TextField
-                required
                 label="Kommentar"
                 value={comment}
                 onChange={e => setComment(e.target.value)}
@@ -378,6 +386,7 @@ const Booking = props => {
 
           <section className={styles.bottomRow}>
             <PrimaryButton
+              disabled={!canSubmitReservation}
               className={styles.right}
               onClick={onSubmitReservation}
             >
