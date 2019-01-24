@@ -31,7 +31,7 @@ import Confirmation from "./booking/Confirmation";
 
 const Booking = props => {
   // Redirect to front page if not authenticated
-  if (!props.auth.isAuthenticated) {
+  if (!props.auth.authenticated) {
     props.history.push("/");
   }
 
