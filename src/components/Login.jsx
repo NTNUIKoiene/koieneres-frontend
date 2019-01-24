@@ -1,12 +1,29 @@
 import React from "react";
+import { useState } from "react";
 import styles from "./Login.module.css";
-import { TextField, PrimaryButton } from "office-ui-fabric-react";
+import {
+  TextField,
+  PrimaryButton,
+  MessageBar,
+  MessageBarType
+} from "office-ui-fabric-react";
 import { ColorClassNames, FontClassNames } from "@uifabric/styling";
 
 const Login = props => {
-  const onLogIn = () => {
-    props.auth.authenticate();
-    props.history.push("/booking/");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const onLogIn = async () => {
+    setIsLoading(true);
+    const authenticated = await props.auth.login(username, password);
+    if (authenticated) {
+      props.history.push("/booking/");
+    } else {
+      setErrorMessage("Sjekk brukernavn og passord");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -20,9 +37,30 @@ const Login = props => {
         >
           Velkommen til KoieneRes
         </h1>
-        <TextField label="Brukernavn" />
-        <TextField type="password" label="Passord" />
-        <PrimaryButton className={styles.button} onClick={onLogIn}>
+        <TextField
+          label="Brukernavn"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+        />
+        <TextField
+          type="password"
+          label="Passord"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
+        {errorMessage.length > 0 && (
+          <MessageBar
+            className={styles.message}
+            messageBarType={MessageBarType.error}
+          >
+            {errorMessage}
+          </MessageBar>
+        )}
+        <PrimaryButton
+          className={styles.button}
+          onClick={onLogIn}
+          disabled={isLoading}
+        >
           Logg inn
         </PrimaryButton>
       </div>

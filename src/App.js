@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import Login from "./components/Login";
 import Booking from "./components/Booking";
 import Reservations from "./components/Reservations";
+import Auth from "./auth";
 
 const fakeAuth = {
   isAuthenticated: true,
@@ -22,6 +23,8 @@ const fakeAuth = {
   }
 };
 
+const authModule = new Auth();
+
 class App extends Component {
   render() {
     return (
@@ -30,7 +33,7 @@ class App extends Component {
           <Route
             exact
             path="/"
-            render={props => <Login {...props} auth={fakeAuth} />}
+            render={props => <Login {...props} auth={authModule} />}
           />
           <Route
             path="/reservations"
