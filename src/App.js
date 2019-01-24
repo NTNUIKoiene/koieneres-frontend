@@ -5,24 +5,6 @@ import Booking from "./components/Booking";
 import Reservations from "./components/Reservations";
 import Auth from "./auth";
 
-const fakeAuth = {
-  isAuthenticated: true,
-  authenticate(cb) {
-    console.log("Logging in");
-    this.isAuthenticated = true;
-    setTimeout(cb, 100); // fake async
-  },
-  signout(cb) {
-    console.log("Logging out");
-    this.isAuthenticated = false;
-    setTimeout(cb, 100);
-  },
-  userConfig: {
-    isBoard: true,
-    maxNights: 3
-  }
-};
-
 const authModule = new Auth();
 
 class App extends Component {
@@ -37,11 +19,11 @@ class App extends Component {
           />
           <Route
             path="/reservations"
-            render={props => <Reservations {...props} auth={fakeAuth} />}
+            render={props => <Reservations {...props} auth={authModule} />}
           />
           <Route
             path="/booking"
-            render={props => <Booking {...props} auth={fakeAuth} />}
+            render={props => <Booking {...props} auth={authModule} />}
           />
         </div>
       </Router>

@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./Login.module.css";
 import {
   TextField,
@@ -14,6 +14,17 @@ const Login = props => {
   const [errorMessage, setErrorMessage] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const refreshToken = async () => {
+    const response = await props.auth.refresh();
+    if (response) {
+      props.history.push("/booking/");
+    }
+  };
+
+  useEffect(() => {
+    refreshToken();
+  });
 
   const onLogIn = async () => {
     setIsLoading(true);
