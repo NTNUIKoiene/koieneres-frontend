@@ -44,18 +44,16 @@ const Booking = props => {
       MATRIX SECTION
   */
   const [reservationData, setReservationData] = useState([]);
-  useEffect(
-    () => {
-      getData()
-        .then(data => {
-          setReservationData(data);
-        })
-        .catch(() => {
-          setErrorText("Klarte ikke å hente reservasjonsdata!");
-        });
-    },
-    [setReservationData]
-  );
+  useEffect(() => {
+    getData()
+      .then(data => {
+        setReservationData(data);
+      })
+      .catch(() => {
+        setErrorText("Klarte ikke å hente reservasjonsdata!");
+      });
+  }, [setReservationData]);
+
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(addDays(new Date(), 13));
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
@@ -130,7 +128,7 @@ const Booking = props => {
     .map(
       sd =>
         sd.members + sd.nonMembers >
-        numberOfBeds - selectedCabinResData[sd.dateKey].booked
+        numberOfBeds - selectedCabinResData.data[sd.dateKey].booked
     )
     .includes(true);
 
@@ -170,14 +168,15 @@ const Booking = props => {
       maxSpaces={
         numberOfBeds -
         Math.max(
-          ...selectedDates.map(d => selectedCabinResData[d.dateKey].booked)
+          ...selectedDates.map(d => selectedCabinResData.data[d.dateKey].booked)
         )
       }
       updateAll={true}
     />
   ) : (
     selectedDates.map((d, k) => {
-      const maxSpaces = numberOfBeds - selectedCabinResData[d.dateKey].booked;
+      const maxSpaces =
+        numberOfBeds - selectedCabinResData.data[d.dateKey].booked;
       return (
         <BedSelector
           date={d}
@@ -204,7 +203,15 @@ const Booking = props => {
   const [comment, setComment] = useState("");
 
   const onSubmitReservation = () => {
-    const payload = { membershipNumber, name, phone, email };
+    const payload = {
+      membership_number: membershipNumber,
+      name: name,
+      phone: phone,
+      email: email,
+      comment: comment,
+      should_pay: shouldPay,
+      selected_dates: selectedDates
+    };
     setModalIsOpen(true);
     return payload;
   };
@@ -226,7 +233,6 @@ const Booking = props => {
     selectedDates.length > 0;
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
-
   return (
     <React.Fragment>
       <Prompt
