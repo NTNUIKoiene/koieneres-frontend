@@ -4,7 +4,6 @@ import Header from "./Header";
 import styles from "./Booking.module.css";
 import { Prompt } from "react-router-dom";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
-import { getData } from "../data/cabindates";
 import { datePickerStrings } from "../utils/DatePickerStrings";
 import { getUpdatedSelectedDates } from "../utils/Utils";
 import { addDays, format, differenceInCalendarDays } from "date-fns";
@@ -45,12 +44,19 @@ const Booking = props => {
       MATRIX SECTION
   */
   const [reservationData, setReservationData] = useState([]);
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(addDays(new Date(), 0));
+  const deltaDays = differenceInCalendarDays(toDate, fromDate);
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/status/`);
-      const data = await response.json();
-      setReservationData(data);
+      const statusData = await (await fetch(`${BASE_URL}/api/status/`)).json();
+      const periodData = await (await fetch(
+        `${BASE_URL}/api/reservation-period/`
+      )).json();
+      setFromDate(new Date(periodData.from));
+      setToDate(new Date(periodData.to));
+      setReservationData(statusData);
     } catch (_) {
       setErrorText("Klarte ikke å hente reservasjonsdata!");
     }
@@ -60,9 +66,6 @@ const Booking = props => {
     fetchData();
   }, []);
 
-  const [fromDate, setFromDate] = useState(new Date());
-  const [toDate, setToDate] = useState(addDays(new Date(), 5));
-  const deltaDays = differenceInCalendarDays(toDate, fromDate);
   const [selectedDates, setSelectedDates] = useState([]);
 
   const onCellClick = (name, dateKey, isSelected) => {
