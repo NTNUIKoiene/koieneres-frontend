@@ -200,30 +200,17 @@ const Booking = props => {
   /*
       CONTACT INFORMATION SECTION
   */
-  const [membershipNumber, setMembershipNumber] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  // TODO: Remove default values
+  const [membershipNumber, setMembershipNumber] = useState("01234");
+  const [name, setName] = useState("Ola Nordmann");
+  const [phone, setPhone] = useState("99887766");
+  const [email, setEmail] = useState("ola.nordmann@example.com");
 
   /* 
       EXTRA INFORMATION SECTION
   */
   const [shouldPay, setShouldPay] = useState(true);
   const [comment, setComment] = useState("");
-
-  const onSubmitReservation = () => {
-    const payload = {
-      membership_number: membershipNumber,
-      name: name,
-      phone: phone,
-      email: email,
-      comment: comment,
-      should_pay: shouldPay,
-      selected_dates: selectedDates
-    };
-    setModalIsOpen(true);
-    return payload;
-  };
 
   const hasBeenEdited =
     membershipNumber !== "" ||
@@ -408,7 +395,7 @@ const Booking = props => {
             <PrimaryButton
               disabled={!canSubmitReservation}
               className={styles.right}
-              onClick={onSubmitReservation}
+              onClick={() => setModalIsOpen(true)}
             >
               Utfør Reservasjon
             </PrimaryButton>
@@ -430,7 +417,8 @@ const Booking = props => {
               shouldPay={shouldPay}
               comment={comment}
               totalPrice={totalPrice}
-              onConfirm={null}
+              onCancel={() => setModalIsOpen(false)}
+              history={props.history}
             />
           </Modal>
         </div>
