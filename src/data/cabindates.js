@@ -10,20 +10,25 @@ function randomBoolean(threshold = 0.5) {
   return Math.random() >= threshold;
 }
 
-function generateData(cabinName, size, nDays = 13) {
-  const data = {
-    cabinName,
+function generateData(name, size, nDays = 13) {
+  const status = {
+    name,
     size,
     memberPrice: 40,
     nonMemberPrice: 80
   };
   const today = moment();
+  const data = {};
   for (let i = 0; i < nDays; i++) {
     const key = today.format("YYYY-MM-DD");
-    data[key] = { booked: getRandomInt(0, size), isClosed: randomBoolean(0.9) };
+    data[key] = {
+      booked: getRandomInt(0, size),
+      isClosed: randomBoolean(0.9)
+    };
     today.add(1, "day");
   }
-  return data;
+  status["data"] = data;
+  return status;
 }
 
 const resData = [

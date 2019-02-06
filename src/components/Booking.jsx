@@ -28,6 +28,7 @@ import BedSelector from "./booking/BedSelector";
 import Cell from "./booking/Cell";
 import Help from "./booking/Help";
 import Confirmation from "./booking/Confirmation";
+import { BASE_URL } from "../config";
 
 const Booking = props => {
   // Redirect to front page if not authenticated
@@ -44,27 +45,30 @@ const Booking = props => {
       MATRIX SECTION
   */
   const [reservationData, setReservationData] = useState([]);
-  useEffect(
-    () => {
-      getData()
-        .then(data => {
-          setReservationData(data);
-        })
-        .catch(() => {
-          setErrorText("Klarte ikke å hente reservasjonsdata!");
-        });
-    },
-    [setReservationData]
-  );
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/status/`);
+      const data = await response.json();
+      setReservationData(data);
+    } catch (_) {
+      setErrorText("Klarte ikke å hente reservasjonsdata!");
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const [fromDate, setFromDate] = useState(new Date());
-  const [toDate, setToDate] = useState(addDays(new Date(), 13));
+  const [toDate, setToDate] = useState(addDays(new Date(), 5));
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
   const [selectedDates, setSelectedDates] = useState([]);
 
-  const onCellClick = (cabinName, dateKey, isSelected) => {
+  const onCellClick = (name, dateKey, isSelected) => {
     setSelectedDates(
       getUpdatedSelectedDates(
-        cabinName,
+        name,
         dateKey,
         isSelected,
         selectedDates,
@@ -75,13 +79,13 @@ const Booking = props => {
   // Produce columns for data view
   const dataColumns = [
     {
-      key: "cabinname",
+      key: "name",
       name: "",
       minWidth: 100,
       maxWidth: 260,
       isRowHeader: true,
       onRender: item => {
-        return <div>{item.cabinName}</div>;
+        return <>{item.name}</>;
       }
     }
   ];
@@ -110,13 +114,12 @@ const Booking = props => {
   /*
       RESERVATION DETAIL SECTION
   */
-  const selectedCabinName =
-    (selectedDates[0] && selectedDates[0].cabinName) || "Ingen koie valgt";
+  const selectedname =
+    (selectedDates[0] && selectedDates[0].name) || "Ingen koie valgt";
 
   const selectedCabinResData =
-    reservationData.filter(
-      cabinData => cabinData.cabinName === selectedCabinName
-    )[0] || {};
+    reservationData.filter(cabinData => cabinData.name === selectedname)[0] ||
+    {};
   const memberPrice = selectedCabinResData.memberPrice || 0;
   const nonMemberPrice = selectedCabinResData.nonMemberPrice || 0;
   const numberOfBeds = selectedCabinResData.size || 0;
@@ -126,11 +129,12 @@ const Booking = props => {
     0
   );
   const [sameForAllDates, setSameForAllDates] = useState(true);
+
   const isOverBooked = selectedDates
     .map(
       sd =>
         sd.members + sd.nonMembers >
-        numberOfBeds - selectedCabinResData[sd.dateKey].booked
+        numberOfBeds - selectedCabinResData.data[sd.dateKey].booked
     )
     .includes(true);
 
@@ -170,14 +174,15 @@ const Booking = props => {
       maxSpaces={
         numberOfBeds -
         Math.max(
-          ...selectedDates.map(d => selectedCabinResData[d.dateKey].booked)
+          ...selectedDates.map(d => selectedCabinResData.data[d.dateKey].booked)
         )
       }
       updateAll={true}
     />
   ) : (
     selectedDates.map((d, k) => {
-      const maxSpaces = numberOfBeds - selectedCabinResData[d.dateKey].booked;
+      const maxSpaces =
+        numberOfBeds - selectedCabinResData.data[d.dateKey].booked;
       return (
         <BedSelector
           date={d}
@@ -204,7 +209,15 @@ const Booking = props => {
   const [comment, setComment] = useState("");
 
   const onSubmitReservation = () => {
-    const payload = { membershipNumber, name, phone, email };
+    const payload = {
+      membership_number: membershipNumber,
+      name: name,
+      phone: phone,
+      email: email,
+      comment: comment,
+      should_pay: shouldPay,
+      selected_dates: selectedDates
+    };
     setModalIsOpen(true);
     return payload;
   };
@@ -226,7 +239,6 @@ const Booking = props => {
     selectedDates.length > 0;
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
-
   return (
     <React.Fragment>
       <Prompt
@@ -308,7 +320,7 @@ const Booking = props => {
               </MessageBar>
             )}
             <Label>
-              Koie: <b>{selectedCabinName}</b>
+              Koie: <b>{selectedname}</b>
             </Label>
             <Label>
               Datoer: <b>{selectedDates.map(sd => sd.dateKey).join(", ")}</b>
