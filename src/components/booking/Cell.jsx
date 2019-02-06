@@ -10,7 +10,7 @@ const Cell = ({ item, day, selectedDates, onCellClick }) => {
   ).length;
 
   let cellStyle = styles.cell;
-  if (count === item.size) {
+  if (count >= item.size) {
     cellStyle = styles.fullCell;
   } else if (count > 0) {
     cellStyle = styles.partialCell;
