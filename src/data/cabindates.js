@@ -10,9 +10,9 @@ function randomBoolean(threshold = 0.5) {
   return Math.random() >= threshold;
 }
 
-function generateData(cabinName, size, nDays = 13) {
+function generateData(name, size, nDays = 13) {
   const status = {
-    cabinName,
+    name,
     size,
     memberPrice: 40,
     nonMemberPrice: 80

@@ -3,7 +3,7 @@ import { differenceInCalendarDays } from "date-fns";
     On Cell Click, calculate the new valid list of selected dates. 
 */
 function getUpdatedSelectedDates(
-  cabinName,
+  name,
   dateKey,
   isSelected,
   selectedDates,
@@ -11,30 +11,30 @@ function getUpdatedSelectedDates(
 ) {
   // Create new list of selected dates based on user action
   if (selectedDates.length === 0) {
-    return [{ cabinName, dateKey, members: 0, nonMembers: 0 }];
+    return [{ name, dateKey, members: 0, nonMembers: 0 }];
   }
   let newSelectedDates = [];
   if (isSelected) {
     newSelectedDates = [...selectedDates].filter(
-      sd => sd.cabinName !== cabinName || sd.dateKey !== dateKey
+      sd => sd.name !== name || sd.dateKey !== dateKey
     );
   } else {
     newSelectedDates = [
       ...selectedDates,
-      { cabinName, dateKey, members: 0, nonMembers: 0 }
+      { name, dateKey, members: 0, nonMembers: 0 }
     ];
   }
   newSelectedDates.sort(selectedDateComparator);
   // Check that the new list is valid
   for (let i = 0; i < newSelectedDates.length - 1; i++) {
     if (
-      newSelectedDates[i].cabinName !== newSelectedDates[i + 1].cabinName ||
+      newSelectedDates[i].name !== newSelectedDates[i + 1].name ||
       differenceInCalendarDays(
         new Date(newSelectedDates[i + 1].dateKey),
         new Date(newSelectedDates[i].dateKey)
       ) !== 1
     ) {
-      return [{ cabinName, dateKey, members: 0, nonMembers: 0 }];
+      return [{ name, dateKey, members: 0, nonMembers: 0 }];
     }
   }
   // Ensure max number of nights is respected by removing first or last of list

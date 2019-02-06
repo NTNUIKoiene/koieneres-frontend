@@ -19,7 +19,7 @@ const Confirmation = ({
     <h1>Bekreft Reservasjon</h1>
     <div>
       <Label>
-        Koie: <b>{selectedDates[0].cabinName}</b>
+        Koie: <b>{selectedDates[0].name}</b>
       </Label>
       <Label>
         Datoer:{" "}
