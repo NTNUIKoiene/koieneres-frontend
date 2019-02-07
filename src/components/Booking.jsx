@@ -54,7 +54,6 @@ const Booking = props => {
       const periodData = await (await fetch(
         `${BASE_URL}/api/reservation-period/`
       )).json();
-      setFromDate(new Date(periodData.from));
       setToDate(new Date(periodData.to));
       setReservationData(statusData);
     } catch (_) {
@@ -270,6 +269,7 @@ const Booking = props => {
                 strings={datePickerStrings}
                 firstDayOfWeek={DayOfWeek.Monday}
                 formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
+                minDate={new Date()}
               />
               <Label htmlFor="toDate">til</Label>
               <DatePicker
