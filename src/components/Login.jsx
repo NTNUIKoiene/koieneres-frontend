@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { withRouter } from 'react-router'
 import styles from "./Login.module.css";
 import {
   TextField,
@@ -79,4 +80,4 @@ const Login = props => {
   );
 };
 
-export default Login;
+export default withRouter(Login);

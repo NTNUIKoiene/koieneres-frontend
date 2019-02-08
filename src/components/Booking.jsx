@@ -30,12 +30,11 @@ import Confirmation from "./booking/Confirmation";
 import { BASE_URL } from "../config";
 
 const Booking = props => {
-  // Redirect to front page if not authenticated
-  if (!props.auth.authenticated) {
-    props.history.push("/");
-  }
-
-  const { userConfig } = props.auth;
+  // TODO: Make dynamic
+  const userConfig = {
+    isBoard: true,
+    maxNights: 3
+  };
 
   // General state
   const [errorText, setErrorText] = useState("");
@@ -48,22 +47,33 @@ const Booking = props => {
   const [toDate, setToDate] = useState(addDays(new Date(), 0));
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
 
-  const fetchData = async () => {
+  const fetchReservationData = async () => {
     try {
-      const statusData = await (await fetch(`${BASE_URL}/api/status/`)).json();
-      const periodData = await (await fetch(
-        `${BASE_URL}/api/reservation-period/`
+      const statusData = await (await fetch(
+        `${BASE_URL}/api/status/?from=${format(
+          fromDate,
+          "YYYY-MM-DD"
+        )}&to=${format(toDate, "YYYY-MM-DD")}`
       )).json();
-      setFromDate(new Date(periodData.from));
-      setToDate(new Date(periodData.to));
       setReservationData(statusData);
     } catch (_) {
       setErrorText("Klarte ikke å hente reservasjonsdata!");
     }
   };
 
+  const fetchReservationPeriod = async () => {
+    const periodData = await (await fetch(
+      `${BASE_URL}/api/reservation-period/`
+    )).json();
+    setToDate(new Date(periodData.to));
+  };
+
   useEffect(() => {
-    fetchData();
+    fetchReservationData();
+  }, [fromDate, toDate]);
+
+  useEffect(() => {
+    fetchReservationPeriod();
   }, []);
 
   const [selectedDates, setSelectedDates] = useState([]);
@@ -230,7 +240,7 @@ const Booking = props => {
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   return (
-    <React.Fragment>
+    <>
       <Prompt
         when={hasBeenEdited}
         message="Reservasjonen er ikke lagret, sikker på at du vil avbryte?"
@@ -270,6 +280,7 @@ const Booking = props => {
                 strings={datePickerStrings}
                 firstDayOfWeek={DayOfWeek.Monday}
                 formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
+                minDate={new Date()}
               />
               <Label htmlFor="toDate">til</Label>
               <DatePicker
@@ -423,7 +434,7 @@ const Booking = props => {
           </Modal>
         </div>
       </div>
-    </React.Fragment>
+    </>
   );
 };
 
