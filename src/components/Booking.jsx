@@ -49,7 +49,12 @@ const Booking = props => {
 
   const fetchReservationData = async () => {
     try {
-      const statusData = await (await fetch(`${BASE_URL}/api/status/?from=${format(fromDate, "YYYY-MM-DD")}&to=${format(toDate, "YYYY-MM-DD")}`)).json();
+      const statusData = await (await fetch(
+        `${BASE_URL}/api/status/?from=${format(
+          fromDate,
+          "YYYY-MM-DD"
+        )}&to=${format(toDate, "YYYY-MM-DD")}`
+      )).json();
       setReservationData(statusData);
     } catch (_) {
       setErrorText("Klarte ikke å hente reservasjonsdata!");
@@ -61,15 +66,15 @@ const Booking = props => {
       `${BASE_URL}/api/reservation-period/`
     )).json();
     setToDate(new Date(periodData.to));
-  }
+  };
 
   useEffect(() => {
     fetchReservationData();
   }, [fromDate, toDate]);
 
   useEffect(() => {
-    fetchReservationPeriod()
-  }, [])
+    fetchReservationPeriod();
+  }, []);
 
   const [selectedDates, setSelectedDates] = useState([]);
 
@@ -188,19 +193,19 @@ const Booking = props => {
       updateAll={true}
     />
   ) : (
-      selectedDates.map((d, k) => {
-        const maxSpaces =
-          numberOfBeds - selectedCabinResData.data[d.dateKey].booked;
-        return (
-          <BedSelector
-            date={d}
-            key={k}
-            updateBedsOnDate={updateBedsOnDate}
-            maxSpaces={maxSpaces}
-          />
-        );
-      })
-    );
+    selectedDates.map((d, k) => {
+      const maxSpaces =
+        numberOfBeds - selectedCabinResData.data[d.dateKey].booked;
+      return (
+        <BedSelector
+          date={d}
+          key={k}
+          updateBedsOnDate={updateBedsOnDate}
+          maxSpaces={maxSpaces}
+        />
+      );
+    })
+  );
 
   /*
       CONTACT INFORMATION SECTION
@@ -235,7 +240,7 @@ const Booking = props => {
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   return (
-    <React.Fragment>
+    <>
       <Prompt
         when={hasBeenEdited}
         message="Reservasjonen er ikke lagret, sikker på at du vil avbryte?"
@@ -429,7 +434,7 @@ const Booking = props => {
           </Modal>
         </div>
       </div>
-    </React.Fragment>
+    </>
   );
 };
 
