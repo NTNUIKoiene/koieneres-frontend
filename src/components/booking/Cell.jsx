@@ -4,6 +4,7 @@ import styles from "../Booking.module.css";
 import { TooltipHost } from "office-ui-fabric-react";
 
 const Cell = ({ item, day, selectedDates, onCellClick }) => {
+  if (!item.data[day]) return null;
   const count = item.data[day].booked;
   const isSelected = selectedDates.filter(
     sd => sd.name === item.name && day === sd.dateKey

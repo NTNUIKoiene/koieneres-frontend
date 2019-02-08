@@ -47,22 +47,29 @@ const Booking = props => {
   const [toDate, setToDate] = useState(addDays(new Date(), 0));
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
 
-  const fetchData = async () => {
+  const fetchReservationData = async () => {
     try {
-      const statusData = await (await fetch(`${BASE_URL}/api/status/`)).json();
-      const periodData = await (await fetch(
-        `${BASE_URL}/api/reservation-period/`
-      )).json();
-      setToDate(new Date(periodData.to));
+      const statusData = await (await fetch(`${BASE_URL}/api/status/?from=${format(fromDate, "YYYY-MM-DD")}&to=${format(toDate, "YYYY-MM-DD")}`)).json();
       setReservationData(statusData);
     } catch (_) {
       setErrorText("Klarte ikke å hente reservasjonsdata!");
     }
   };
 
+  const fetchReservationPeriod = async () => {
+    const periodData = await (await fetch(
+      `${BASE_URL}/api/reservation-period/`
+    )).json();
+    setToDate(new Date(periodData.to));
+  }
+
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchReservationData();
+  }, [fromDate, toDate]);
+
+  useEffect(() => {
+    fetchReservationPeriod()
+  }, [])
 
   const [selectedDates, setSelectedDates] = useState([]);
 

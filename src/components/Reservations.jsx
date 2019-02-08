@@ -2,9 +2,7 @@ import React from "react";
 import Header from "./Header";
 
 const Reservations = props => {
-  if (!props.auth.authenticated) {
-    props.history.push("/");
-  }
+
   return (
     <div>
       <Header currentPage={props.location.pathname} />
