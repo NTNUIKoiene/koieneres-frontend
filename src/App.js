@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import Login from "./components/Login";
 import Booking from "./components/Booking";
 import Reservations from "./components/Reservations";
+import NotFound from "./components/NotFound";
 import Auth from "./auth";
 
 const authModule = new Auth();
@@ -19,6 +20,7 @@ class App extends Component {
           />
           <PrivateRoute path="/reservations" component={Reservations} />
           <PrivateRoute path="/booking" component={Booking} />
+          <Route component={NotFound} />
         </div>
       </Router>
     );
@@ -32,13 +34,13 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
       authModule.authenticated ? (
         <Component {...props} />
       ) : (
-          <Redirect
-            to={{
-              pathname: "/",
-              state: { from: props.location }
-            }}
-          />
-        )
+        <Redirect
+          to={{
+            pathname: "/",
+            state: { from: props.location }
+          }}
+        />
+      )
     }
   />
 );
