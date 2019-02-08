@@ -1,6 +1,7 @@
 import React from "react";
 import { Label, PrimaryButton, DefaultButton } from "office-ui-fabric-react";
 import styles from "../Booking.module.css";
+import { withRouter } from "react-router";
 import { BASE_URL } from "../../config";
 
 const Confirmation = ({
@@ -26,15 +27,15 @@ const Confirmation = ({
     selected_dates: selectedDates
   };
   const onSubmit = async () => {
-    await fetch(`${BASE_URL}/api/create-reservation/`, {
+    const { id } = await (await fetch(`${BASE_URL}/api/create-reservation/`, {
       method: "POST",
       headers: {
         Authorization: `JWT ${localStorage.getItem("token")}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify(payload)
-    });
-    history.push("/booking");
+    })).json();
+    history.push(`/reservations/${id}`);
   };
 
   return (
@@ -96,4 +97,4 @@ const Confirmation = ({
   );
 };
 
-export default Confirmation;
+export default withRouter(Confirmation);
