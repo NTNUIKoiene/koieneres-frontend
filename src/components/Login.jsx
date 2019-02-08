@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { withRouter } from 'react-router'
+import { withRouter } from "react-router";
 import styles from "./Login.module.css";
 import {
   TextField,
@@ -59,6 +59,7 @@ const Login = props => {
           label="Passord"
           value={password}
           onChange={e => setPassword(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && onLogIn()}
         />
         {errorMessage.length > 0 && (
           <MessageBar

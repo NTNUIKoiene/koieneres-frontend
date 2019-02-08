@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import Header from "./Header";
 import styles from "./Booking.module.css";
-import { Prompt } from "react-router-dom";
+// import { Prompt } from "react-router-dom";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
 import { datePickerStrings } from "../utils/DatePickerStrings";
 import { getUpdatedSelectedDates } from "../utils/Utils";
@@ -222,13 +222,13 @@ const Booking = props => {
   const [shouldPay, setShouldPay] = useState(true);
   const [comment, setComment] = useState("");
 
-  const hasBeenEdited =
-    membershipNumber !== "" ||
-    name !== "" ||
-    phone !== "" ||
-    email !== "" ||
-    comment !== "" ||
-    selectedDates.length > 0;
+  // const hasBeenEdited =
+  //   membershipNumber !== "" ||
+  //   name !== "" ||
+  //   phone !== "" ||
+  //   email !== "" ||
+  //   comment !== "" ||
+  //   selectedDates.length > 0;
 
   const canSubmitReservation =
     membershipNumber !== "" &&
@@ -241,11 +241,6 @@ const Booking = props => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   return (
     <>
-      <Prompt
-        when={hasBeenEdited}
-        message="Reservasjonen er ikke lagret, sikker på at du vil avbryte?"
-      />
-
       <div>
         <Header
           currentPage={props.location.pathname}
@@ -429,7 +424,6 @@ const Booking = props => {
               comment={comment}
               totalPrice={totalPrice}
               onCancel={() => setModalIsOpen(false)}
-              history={props.history}
             />
           </Modal>
         </div>
