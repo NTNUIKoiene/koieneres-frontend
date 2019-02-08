@@ -30,12 +30,11 @@ import Confirmation from "./booking/Confirmation";
 import { BASE_URL } from "../config";
 
 const Booking = props => {
-  // Redirect to front page if not authenticated
-  if (!props.auth.authenticated) {
-    props.history.push("/");
-  }
-
-  const { userConfig } = props.auth;
+  // TODO: Make dynamic
+  const userConfig = {
+    isBoard: true,
+    maxNights: 3
+  };
 
   // General state
   const [errorText, setErrorText] = useState("");
@@ -182,19 +181,19 @@ const Booking = props => {
       updateAll={true}
     />
   ) : (
-    selectedDates.map((d, k) => {
-      const maxSpaces =
-        numberOfBeds - selectedCabinResData.data[d.dateKey].booked;
-      return (
-        <BedSelector
-          date={d}
-          key={k}
-          updateBedsOnDate={updateBedsOnDate}
-          maxSpaces={maxSpaces}
-        />
-      );
-    })
-  );
+      selectedDates.map((d, k) => {
+        const maxSpaces =
+          numberOfBeds - selectedCabinResData.data[d.dateKey].booked;
+        return (
+          <BedSelector
+            date={d}
+            key={k}
+            updateBedsOnDate={updateBedsOnDate}
+            maxSpaces={maxSpaces}
+          />
+        );
+      })
+    );
 
   /*
       CONTACT INFORMATION SECTION

@@ -23,10 +23,6 @@ import { BASE_URL } from "./config";
 export default class Auth {
   authenticated = false;
   token = localStorage.getItem("token");
-  userConfig = {
-    isBoard: true,
-    maxNights: 3
-  };
 
   login = async (username, password) => {
     const response = await (await fetch(

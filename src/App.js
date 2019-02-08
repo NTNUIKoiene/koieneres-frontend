@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import Login from "./components/Login";
 import Booking from "./components/Booking";
 import Reservations from "./components/Reservations";
@@ -17,18 +17,30 @@ class App extends Component {
             path="/"
             render={props => <Login {...props} auth={authModule} />}
           />
-          <Route
-            path="/reservations"
-            render={props => <Reservations {...props} auth={authModule} />}
-          />
-          <Route
-            path="/booking"
-            render={props => <Booking {...props} auth={authModule} />}
-          />
+          <PrivateRoute path="/reservations" component={Reservations} />
+          <PrivateRoute path="/booking" component={Booking} />
         </div>
       </Router>
     );
   }
 }
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={props =>
+      authModule.authenticated ? (
+        <Component {...props} />
+      ) : (
+          <Redirect
+            to={{
+              pathname: "/",
+              state: { from: props.location }
+            }}
+          />
+        )
+    }
+  />
+);
 
 export default App;
