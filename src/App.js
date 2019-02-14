@@ -19,13 +19,13 @@ class App extends Component {
       <Router>
         <div>
           <Switch>
+            <PrivateRoute path="/reservations" component={Reservations} />
+            <PrivateRoute path="/booking" component={Booking} />
             <Route
               exact
               path="/"
               render={props => <Login {...props} auth={authModule} />}
             />
-            <PrivateRoute path="/reservations" component={Reservations} />
-            <PrivateRoute path="/booking" component={Booking} />
             <Route component={NotFound} />
           </Switch>
         </div>
