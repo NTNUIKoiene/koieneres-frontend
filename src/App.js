@@ -17,18 +17,16 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <div>
-          <Switch>
-            <Route
-              exact
-              path="/"
-              render={props => <Login {...props} auth={authModule} />}
-            />
-            <PrivateRoute path="/reservations" component={Reservations} />
-            <PrivateRoute path="/booking" component={Booking} />
-            <Route component={NotFound} />
-          </Switch>
-        </div>
+        <Switch>
+          <PrivateRoute path="/reservations" component={Reservations} />
+          <PrivateRoute path="/booking" component={Booking} />
+          <Route
+            exact
+            path="/"
+            render={props => <Login {...props} auth={authModule} />}
+          />
+          <Route component={NotFound} />
+        </Switch>
       </Router>
     );
   }

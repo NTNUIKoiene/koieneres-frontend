@@ -1,0 +1,33 @@
+
+
+.card {
+  border: 1px solid lightgray;
+  margin: 10px;
+  padding: 10px;
+}
+
+.card:hover {
+  border: 1px solid rgb(0, 87, 32);
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+
+.label {
+  display: inline-block;
+  width: 170px;
+}
+.value {
+  margin-left: 5px;
+}
+
+.unpaid {
+  composes: value;
+  color: red;
+}
+
+.info > div {
+  margin-top: 5px;
+}

@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { withRouter } from "react-router";
+import { withRouter, Redirect } from "react-router-dom";
 import styles from "./Login.module.css";
 import {
   TextField,
@@ -16,27 +16,35 @@ const Login = props => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const refreshToken = async () => {
-    const response = await props.auth.refresh();
-    if (response) {
-      props.history.push("/booking/");
-    }
-  };
-
-  useEffect(() => {
-    refreshToken();
-  });
+  const { from } = props.location.state || { from: { pathname: "/booking" } };
+  const [redirectToReferrer, setRedirectToReferrer] = useState(false);
 
   const onLogIn = async () => {
     setIsLoading(true);
     const authenticated = await props.auth.login(username, password);
     if (authenticated) {
-      props.history.push("/booking/");
+      setRedirectToReferrer(true);
     } else {
       setErrorMessage("Sjekk brukernavn og passord");
       setIsLoading(false);
     }
   };
+
+  const refreshToken = async () => {
+    const response = await props.auth.refresh();
+    if (response) {
+      setRedirectToReferrer(true);
+      // props.history.push(from.pathname);
+    }
+  };
+
+  useEffect(() => {
+    refreshToken();
+  }, []);
+
+  if (redirectToReferrer || props.auth.authenticated) {
+    return <Redirect to={from} />;
+  }
 
   return (
     <div className={styles.loginscreen}>
