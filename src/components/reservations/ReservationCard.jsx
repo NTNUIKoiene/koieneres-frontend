@@ -1,9 +1,11 @@
 import React from "react";
 import styles from "./ReservationCard.module.css";
 import { format } from "date-fns";
+import { DefaultButton } from "office-ui-fabric-react";
+import { BASE_URL } from "../../config";
+import { useState } from "react";
 
 const ReservationCard = ({ reservation }) => {
-  console.log("reservation: ", reservation);
   if (reservation.reservationItems.length === 0) return null;
   const {
     id,
@@ -19,7 +21,25 @@ const ReservationCard = ({ reservation }) => {
   const cabin = reservation.reservationItems[0].cabin.name;
   const firstDate = reservation.reservationItems[0].date;
   const numberOfNights = reservation.reservationItems.length;
-  const dates = reservation.reservationItems.map(r => r.date).join(", ")
+  const dates = reservation.reservationItems.map(r => r.date).join(", ");
+
+  const [receiptButtonDisabled, setReceiptButtonDisabled] = useState(false);
+
+  const onReceiptClick = async () => {
+    setReceiptButtonDisabled(true);
+    const data = await (await fetch(
+      `${BASE_URL}/api/reservationdata/${id}/receipt/`,
+      {
+        headers: {
+          Authorization: `JWT ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json"
+        }
+      }
+    )).blob();
+    window.open(URL.createObjectURL(data));
+    setReceiptButtonDisabled(false);
+  };
+
   return (
     <div className={styles.card}>
       <h3>{`#${id}: ${cabin}, ${firstDate} (${numberOfNights} ${
@@ -69,6 +89,21 @@ const ReservationCard = ({ reservation }) => {
           ) : (
             <span className={styles.value}>Gratis</span>
           )}
+        </div>
+        <hr />
+        <div>
+          <DefaultButton
+            iconProps={
+              receiptButtonDisabled
+                ? { iconName: "Hourglass" }
+                : { iconName: "PDF" }
+            }
+            ariaLabel="Receipt"
+            onClick={onReceiptClick}
+            disabled={receiptButtonDisabled}
+          >
+            Kvittering
+          </DefaultButton>
         </div>
       </section>
     </div>
