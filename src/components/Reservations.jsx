@@ -8,8 +8,10 @@ import styles from "./Reservations.module.css";
 
 const Reservations = props => {
   const [reservations, setReservations] = useState([]);
+  const [noRes, setNoRes] = useState(false);
 
   const fetchReservations = async () => {
+    setReservations([]);
     const data = await (await fetch(`${BASE_URL}/api/reservationdata/`, {
       headers: {
         Authorization: `JWT ${localStorage.getItem("token")}`,
@@ -17,6 +19,9 @@ const Reservations = props => {
       }
     })).json();
     // TODO: Handle pagination
+    if (data.results.length === 0) {
+      setNoRes(true);
+    }
     setReservations(data.results);
   };
 
@@ -28,12 +33,13 @@ const Reservations = props => {
     <div>
       <Header currentPage={props.location.pathname} />
       <main className={styles.cardcontainer}>
+        {noRes && "No results"}
         {reservations.length === 0 &&
           Array(9)
             .fill()
             .map((_, k) => <LoadingCard key={k} />)}
         {reservations.map((r, i) => (
-          <ReservationCard reservation={r} key={i} />
+          <ReservationCard reservation={r} key={i} reload={fetchReservations} />
         ))}
       </main>
     </div>

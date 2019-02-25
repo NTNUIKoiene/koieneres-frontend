@@ -16,7 +16,7 @@ const Login = props => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const { from } = props.location.state || { from: { pathname: "/booking" } };
+  const { from } = props.location.state || { from: { pathname: "/booking/" } };
   const [redirectToReferrer, setRedirectToReferrer] = useState(false);
 
   const onLogIn = async () => {
