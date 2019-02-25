@@ -16,18 +16,14 @@ const Login = props => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const { from } = props.location.state || { from: { pathname: "/" } };
-  const [redirectToReferrer, setRedirectToReferrer] = useState(false)
-
-
-
-  
+  const { from } = props.location.state || { from: { pathname: "/booking" } };
+  const [redirectToReferrer, setRedirectToReferrer] = useState(false);
 
   const onLogIn = async () => {
     setIsLoading(true);
     const authenticated = await props.auth.login(username, password);
     if (authenticated) {
-      setRedirectToReferrer(true)
+      setRedirectToReferrer(true);
     } else {
       setErrorMessage("Sjekk brukernavn og passord");
       setIsLoading(false);
@@ -37,13 +33,14 @@ const Login = props => {
   const refreshToken = async () => {
     const response = await props.auth.refresh();
     if (response) {
-      props.history.push(from.pathname);
+      setRedirectToReferrer(true);
+      // props.history.push(from.pathname);
     }
   };
 
   useEffect(() => {
     refreshToken();
-  });
+  }, []);
 
   if (redirectToReferrer || props.auth.authenticated) {
     return <Redirect to={from} />;
