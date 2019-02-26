@@ -11,13 +11,13 @@ import {
   DefaultButton,
   PrimaryButton,
   MessageBar,
-  MessageBarType
+  MessageBarType,
+  Label
 } from "office-ui-fabric-react";
 import AdBlockerExtensionDetector from "@schibstedspain/sui-ad-blocker-extension-detector";
 
 const Reservations = props => {
   const [reservations, setReservations] = useState([]);
-  const [noRes, setNoRes] = useState(false);
 
   //Filters
 
@@ -31,8 +31,39 @@ const Reservations = props => {
     setOnlyUnPaid(false);
   };
 
-  const fetchReservations = async () => {
+  // Pagination
+  const resultsPerPage = 9;
+  const [noRes, setNoRes] = useState(false);
+  const [next, setNext] = useState(null);
+  const [previous, setPrevious] = useState(null);
+  const [pageCount, setpageCount] = useState(0);
+  const [page, setpage] = useState(0);
+  const fetchReservations = async (url, reset, forward) => {
     setReservations([]);
+    const data = await (await fetch(url, {
+      headers: {
+        Authorization: `JWT ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json"
+      }
+    })).json();
+    if (data.results.length === 0) {
+      setNoRes(true);
+    }
+    setNext(data.next);
+    setPrevious(data.previous);
+    setpageCount(Math.ceil(data.count / resultsPerPage));
+    if (forward) {
+      setpage(page + 1);
+    } else {
+      setpage(page - 1);
+    }
+    if (reset) {
+      setpage(1);
+    }
+    setReservations(data.results);
+  };
+
+  const fetchInitialReservations = () => {
     let parameters = "?";
     if (onlyFuture) {
       parameters = parameters + "only_future=true&";
@@ -43,55 +74,78 @@ const Reservations = props => {
     if (reservationNumber.length > 0) {
       parameters = parameters + `res_nr=${reservationNumber}&`;
     }
-    const data = await (await fetch(
+    parameters = parameters + `limit=${resultsPerPage}&`;
+    fetchReservations(
       `${BASE_URL}/api/reservationdata/${parameters}`,
-      {
-        headers: {
-          Authorization: `JWT ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json"
-        }
-      }
-    )).json();
-    // TODO: Handle pagination
-    if (data.results.length === 0) {
-      setNoRes(true);
+      true,
+      true
+    );
+  };
+
+  const fetchNextReservations = () => {
+    if (next) {
+      fetchReservations(next, false, true);
     }
-    setReservations(data.results);
+  };
+  const fetchPreviousReservations = () => {
+    if (previous) {
+      fetchReservations(previous, false, false);
+    }
   };
 
   useEffect(() => {
-    fetchReservations();
+    fetchInitialReservations();
   }, []);
 
   return (
     <div>
       <Header currentPage={props.location.pathname} />
-      <div className={styles.filterContainer}>
-        <TextField
-          placeholder="Reservasjonsnummer"
-          value={reservationNumber}
-          onChange={e => setReservationNumber(e.target.value)}
-        />
-        <Checkbox
-          label="Bare fremtidige reservasjoner"
-          checked={onlyFuture}
-          onChange={(_, c) => setOnlyFuture(c)}
-        />
-        <Checkbox
-          label="Bare ubetalte reservasjoner"
-          checked={onlyUnPaid}
-          onChange={(_, c) => setOnlyUnPaid(c)}
-        />
-        <DefaultButton
-          iconProps={{ iconName: "ClearFilter" }}
-          text="Tøm filter"
-          onClick={clearFilter}
-        />
-        <PrimaryButton
-          iconProps={{ iconName: "Filter" }}
-          text="Bruk filter"
-          onClick={fetchReservations}
-        />
+      <div className={styles.toolbar}>
+        <div className={styles.filterContainer}>
+          <TextField
+            placeholder="Reservasjonsnummer"
+            value={reservationNumber}
+            onChange={e => setReservationNumber(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && fetchInitialReservations()}
+          />
+          <Checkbox
+            label="Bare fremtidige reservasjoner"
+            checked={onlyFuture}
+            onChange={(_, c) => setOnlyFuture(c)}
+          />
+          <Checkbox
+            label="Bare ubetalte reservasjoner"
+            checked={onlyUnPaid}
+            onChange={(_, c) => setOnlyUnPaid(c)}
+          />
+          <DefaultButton
+            iconProps={{ iconName: "ClearFilter" }}
+            text="Tøm filter"
+            onClick={clearFilter}
+          />
+          <PrimaryButton
+            iconProps={{ iconName: "Filter" }}
+            text="Bruk filter"
+            onClick={fetchInitialReservations}
+          />
+        </div>
+        <div className={styles.paginationContainer}>
+          <DefaultButton
+            iconProps={{ iconName: "CaretSolidLeft" }}
+            onClick={fetchPreviousReservations}
+            ariaLabel="Previous page"
+            disabled={previous === null}
+          />
+          <Label>
+            {page} / {pageCount}
+          </Label>
+          <DefaultButton
+            iconProps={{ iconName: "CaretSolidRight" }}
+            onClick={fetchNextReservations}
+            ariaLabel="Next page"
+            disabled={next === null}
+          />
+        </div>
       </div>
       <AdBlockerExtensionDetector>
         <div className={styles.adMessage}>
@@ -103,11 +157,15 @@ const Reservations = props => {
       <main className={styles.cardcontainer}>
         {noRes && "No results"}
         {reservations.length === 0 &&
-          Array(9)
+          Array(resultsPerPage)
             .fill()
             .map((_, k) => <LoadingCard key={k} />)}
         {reservations.map((r, i) => (
-          <ReservationCard reservation={r} key={i} reload={fetchReservations} />
+          <ReservationCard
+            reservation={r}
+            key={i}
+            reload={fetchInitialReservations}
+          />
         ))}
       </main>
     </div>
