@@ -11,6 +11,7 @@ import {
   DefaultButton,
   PrimaryButton
 } from "office-ui-fabric-react";
+import AdBlockerExtensionDetector from "@schibstedspain/sui-ad-blocker-extension-detector";
 
 const Reservations = props => {
   const [reservations, setReservations] = useState([]);
@@ -90,6 +91,9 @@ const Reservations = props => {
           onClick={fetchReservations}
         />
       </div>
+      <AdBlockerExtensionDetector>
+        <h1>Gi meg spenn!</h1>
+      </AdBlockerExtensionDetector>
       <main className={styles.cardcontainer}>
         {noRes && "No results"}
         {reservations.length === 0 &&
