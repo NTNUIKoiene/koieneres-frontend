@@ -5,6 +5,7 @@ import { BASE_URL } from "../config";
 import ReservationCard from "./reservations/ReservationCard";
 import LoadingCard from "./reservations/LoadingCard";
 import styles from "./Reservations.module.css";
+import { format } from "date-fns";
 import {
   TextField,
   Checkbox,
@@ -66,13 +67,14 @@ const Reservations = props => {
   const fetchInitialReservations = () => {
     let parameters = "?";
     if (onlyFuture) {
-      parameters = parameters + "only_future=true&";
+      parameters =
+        parameters + `after_date=${format(new Date(), "YYYY-MM-DD")}&`;
     }
     if (onlyUnPaid) {
-      parameters = parameters + "only_unpaid=true&";
+      parameters = parameters + "is_paid=false&should_pay=true&";
     }
     if (reservationNumber.length > 0) {
-      parameters = parameters + `res_nr=${reservationNumber}&`;
+      parameters = parameters + `id=${reservationNumber}&`;
     }
     parameters = parameters + `limit=${resultsPerPage}&`;
     fetchReservations(
