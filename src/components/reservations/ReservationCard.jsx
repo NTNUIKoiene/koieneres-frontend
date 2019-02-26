@@ -1,11 +1,11 @@
 import React from "react";
 import styles from "./ReservationCard.module.css";
 import { format } from "date-fns";
-import { DefaultButton } from "office-ui-fabric-react";
+import { DefaultButton, PrimaryButton } from "office-ui-fabric-react";
 import { BASE_URL } from "../../config";
 import { useState } from "react";
 
-const ReservationCard = ({ reservation }) => {
+const ReservationCard = ({ reservation, reload }) => {
   if (reservation.reservationItems.length === 0) return null;
   const {
     id,
@@ -38,6 +38,15 @@ const ReservationCard = ({ reservation }) => {
     )).blob();
     window.open(URL.createObjectURL(data));
     setReceiptButtonDisabled(false);
+  };
+
+  const [markAsPaidDisabled, setMarkAsPaidDisabled] = useState(false);
+
+  const onMarkAsPaidClick = async () => {
+    setMarkAsPaidDisabled(true);
+    // TODO: api call
+    reload();
+    setMarkAsPaidDisabled(false);
   };
 
   return (
@@ -104,6 +113,21 @@ const ReservationCard = ({ reservation }) => {
           >
             Kvittering
           </DefaultButton>
+          {!isPaid &&
+            shouldPay && (
+              <PrimaryButton
+                iconProps={
+                  markAsPaidDisabled
+                    ? { iconName: "Hourglass" }
+                    : { iconName: "Money" }
+                }
+                ariaLabel="Mark as paid"
+                text="Marker som betalt"
+                className={styles.payBtn}
+                disabled={markAsPaidDisabled}
+                onClick={onMarkAsPaidClick}
+              />
+            )}
         </div>
       </section>
     </div>
