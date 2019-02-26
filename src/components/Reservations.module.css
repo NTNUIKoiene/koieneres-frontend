@@ -3,8 +3,15 @@
   grid-template-columns: repeat(3, 1fr);
 }
 
+.filterContainer {
+  margin: 15px;
+  display: flex;
+  align-items: center;
+}
 
-
+.filterContainer > * {
+  margin-right: 10px;
+}
 
 @media only screen and (max-width: 768px) {
   .cardcontainer {

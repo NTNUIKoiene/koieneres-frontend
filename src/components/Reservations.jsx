@@ -5,19 +5,50 @@ import { BASE_URL } from "../config";
 import ReservationCard from "./reservations/ReservationCard";
 import LoadingCard from "./reservations/LoadingCard";
 import styles from "./Reservations.module.css";
+import {
+  TextField,
+  Checkbox,
+  DefaultButton,
+  PrimaryButton
+} from "office-ui-fabric-react";
 
 const Reservations = props => {
   const [reservations, setReservations] = useState([]);
   const [noRes, setNoRes] = useState(false);
 
+  //Filters
+
+  const [reservationNumber, setReservationNumber] = useState("");
+  const [onlyFuture, setOnlyFuture] = useState(false);
+  const [onlyUnPaid, setOnlyUnPaid] = useState(false);
+
+  const clearFilter = () => {
+    setReservationNumber("");
+    setOnlyFuture(false);
+    setOnlyUnPaid(false);
+  };
+
   const fetchReservations = async () => {
     setReservations([]);
-    const data = await (await fetch(`${BASE_URL}/api/reservationdata/`, {
-      headers: {
-        Authorization: `JWT ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json"
+    let parameters = "?";
+    if (onlyFuture) {
+      parameters = parameters + "only_future=true&";
+    }
+    if (onlyUnPaid) {
+      parameters = parameters + "only_unpaid=true&";
+    }
+    if (reservationNumber.length > 0) {
+      parameters = parameters + `res_nr=${reservationNumber}&`;
+    }
+    const data = await (await fetch(
+      `${BASE_URL}/api/reservationdata/${parameters}`,
+      {
+        headers: {
+          Authorization: `JWT ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json"
+        }
       }
-    })).json();
+    )).json();
     // TODO: Handle pagination
     if (data.results.length === 0) {
       setNoRes(true);
@@ -32,6 +63,33 @@ const Reservations = props => {
   return (
     <div>
       <Header currentPage={props.location.pathname} />
+      <div className={styles.filterContainer}>
+        <TextField
+          placeholder="Reservasjonsnummer"
+          value={reservationNumber}
+          onChange={e => setReservationNumber(e.target.value)}
+        />
+        <Checkbox
+          label="Bare fremtidige reservasjoner"
+          checked={onlyFuture}
+          onChange={(_, c) => setOnlyFuture(c)}
+        />
+        <Checkbox
+          label="Bare ubetalte reservasjoner"
+          checked={onlyUnPaid}
+          onChange={(_, c) => setOnlyUnPaid(c)}
+        />
+        <DefaultButton
+          iconProps={{ iconName: "ClearFilter" }}
+          text="Tøm filter"
+          onClick={clearFilter}
+        />
+        <PrimaryButton
+          iconProps={{ iconName: "Filter" }}
+          text="Bruk filter"
+          onClick={fetchReservations}
+        />
+      </div>
       <main className={styles.cardcontainer}>
         {noRes && "No results"}
         {reservations.length === 0 &&
