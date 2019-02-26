@@ -34,6 +34,7 @@ const Reservations = props => {
 
   // Pagination
   const resultsPerPage = 9;
+  const [count, setCount] = useState(0);
   const [noRes, setNoRes] = useState(false);
   const [next, setNext] = useState(null);
   const [previous, setPrevious] = useState(null);
@@ -52,6 +53,7 @@ const Reservations = props => {
     }
     setNext(data.next);
     setPrevious(data.previous);
+    setCount(data.count);
     setpageCount(Math.ceil(data.count / resultsPerPage));
     if (forward) {
       setpage(page + 1);
@@ -130,6 +132,7 @@ const Reservations = props => {
             text="Bruk filter"
             onClick={fetchInitialReservations}
           />
+          <Label>{count} treff</Label>
         </div>
         <div className={styles.paginationContainer}>
           <DefaultButton
