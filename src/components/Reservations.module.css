@@ -19,12 +19,8 @@
   display: flex;
 }
 
-.paginationContainer > * {
-  margin-right: 10px;
-}
-
-.filterContainer > * {
-  margin-right: 10px;
+.toolbarItem {
+  margin-left: 10px;
 }
 
 .adMessage {

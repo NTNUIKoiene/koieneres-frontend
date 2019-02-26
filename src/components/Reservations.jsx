@@ -103,27 +103,32 @@ const Reservations = props => {
       <div className={styles.toolbar}>
         <div className={styles.filterContainer}>
           <TextField
+            className={styles.toolbarItem}
             placeholder="Reservasjonsnummer"
             value={reservationNumber}
             onChange={e => setReservationNumber(e.target.value)}
             onKeyDown={e => e.key === "Enter" && fetchInitialReservations()}
           />
           <Checkbox
+            className={styles.toolbarItem}
             label="Bare fremtidige reservasjoner"
             checked={onlyFuture}
             onChange={(_, c) => setOnlyFuture(c)}
           />
           <Checkbox
+            className={styles.toolbarItem}
             label="Bare ubetalte reservasjoner"
             checked={onlyUnPaid}
             onChange={(_, c) => setOnlyUnPaid(c)}
           />
           <DefaultButton
+            className={styles.toolbarItem}
             iconProps={{ iconName: "ClearFilter" }}
             text="Tøm filter"
             onClick={clearFilter}
           />
           <PrimaryButton
+            className={styles.toolbarItem}
             iconProps={{ iconName: "Filter" }}
             text="Bruk filter"
             onClick={fetchInitialReservations}
@@ -131,15 +136,17 @@ const Reservations = props => {
         </div>
         <div className={styles.paginationContainer}>
           <DefaultButton
+            className={styles.toolbarItem}
             iconProps={{ iconName: "CaretSolidLeft" }}
             onClick={fetchPreviousReservations}
             ariaLabel="Previous page"
             disabled={previous === null}
           />
-          <Label>
+          <Label className={styles.toolbarItem}>
             {page} / {pageCount}
           </Label>
           <DefaultButton
+            className={styles.toolbarItem}
             iconProps={{ iconName: "CaretSolidRight" }}
             onClick={fetchNextReservations}
             ariaLabel="Next page"
