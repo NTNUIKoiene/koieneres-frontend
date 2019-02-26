@@ -3,16 +3,24 @@
   grid-template-columns: repeat(3, 1fr);
 }
 
-.filterContainer {
-  margin: 15px;
-  display: flex;
-  align-items: center;
-}
-
 .toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin: 10px;
+}
+
+.filterContainer {
+  display: flex;
+  align-items: center;
+}
+
+.filterContainer > * {
+  margin: 10px !important;
+}
+
+.paginationContainer > * {
+  margin: 10px !important;
 }
 
 .paginationContainer {
