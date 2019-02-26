@@ -9,7 +9,9 @@ import {
   TextField,
   Checkbox,
   DefaultButton,
-  PrimaryButton
+  PrimaryButton,
+  MessageBar,
+  MessageBarType
 } from "office-ui-fabric-react";
 import AdBlockerExtensionDetector from "@schibstedspain/sui-ad-blocker-extension-detector";
 
@@ -92,7 +94,11 @@ const Reservations = props => {
         />
       </div>
       <AdBlockerExtensionDetector>
-        <h1>Gi meg spenn!</h1>
+        <div className={styles.adMessage}>
+          <MessageBar messageBarType={MessageBarType.warning}>
+            Skru av adblocker for å kunne åpne kvitteringene!
+          </MessageBar>
+        </div>
       </AdBlockerExtensionDetector>
       <main className={styles.cardcontainer}>
         {noRes && "No results"}
