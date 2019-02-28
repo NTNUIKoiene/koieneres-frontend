@@ -9,6 +9,7 @@ import Login from "./components/Login";
 import Booking from "./components/Booking";
 import Reservations from "./components/Reservations";
 import NotFound from "./components/NotFound";
+import Closing from "./components/Closing";
 import Auth from "./auth";
 
 const authModule = new Auth();
@@ -20,6 +21,7 @@ class App extends Component {
         <Switch>
           <PrivateRoute path="/reservations" component={Reservations} />
           <PrivateRoute path="/booking" component={Booking} />
+          <PrivateRoute path="/closing" component={Closing} />
           <Route
             exact
             path="/"

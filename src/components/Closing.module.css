@@ -1,0 +1,36 @@
+.card {
+  border: 1px solid lightgray;
+  margin: 10px auto;
+  padding: 10px;
+  max-width: 800px;
+}
+
+.card:hover {
+  border: 1px solid rgb(0, 87, 32);
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+.label {
+  display: inline-block;
+  width: 120px;
+}
+
+.value {
+  margin-left: 5px;
+}
+
+.dataContainer {
+  margin: 10px;
+}
+
+.addContainer {
+  margin: 20px;
+  display: flex;
+}
+
+.addContainer > * {
+  margin-right: 10px;
+}
