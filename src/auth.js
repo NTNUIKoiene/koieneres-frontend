@@ -50,6 +50,8 @@ export default class Auth {
   };
   logout = () => {
     localStorage.removeItem("token");
+    this.authenticated = false;
+    this.token = false;
   };
 
   refresh = async () => {
