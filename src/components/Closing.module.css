@@ -15,7 +15,7 @@
 
 .label {
   display: inline-block;
-  width: 170px;
+  width: 120px;
 }
 
 .value {
@@ -24,4 +24,13 @@
 
 .dataContainer {
   margin: 10px;
+}
+
+.addContainer {
+  margin: 20px;
+  display: flex;
+}
+
+.addContainer > * {
+  margin-right: 10px;
 }
