@@ -81,6 +81,21 @@ const Header = props => {
               />
             </li>
           )}
+          <li className={styles.rightLink}>
+            <Link
+              className={[
+                ColorClassNames.themeLighterAlt,
+                ColorClassNames.themeLightBackgroundHover,
+                currentPage === "/logout/"
+                  ? ColorClassNames.themeTertiaryBackground
+                  : "",
+                styles.link
+              ].join(" ")}
+              to="/logout/"
+            >
+              Logg Ut
+            </Link>
+          </li>
         </ul>
       </nav>
       <Modal

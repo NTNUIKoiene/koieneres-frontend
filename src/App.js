@@ -23,6 +23,10 @@ class App extends Component {
           <PrivateRoute path="/booking" component={Booking} />
           <PrivateRoute path="/closing" component={Closing} />
           <Route
+            path="/logout"
+            render={props => <Logout {...props} auth={authModule} />}
+          />
+          <Route
             exact
             path="/"
             render={props => <Login {...props} auth={authModule} />}
@@ -51,5 +55,10 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
     }
   />
 );
+
+const Logout = props => {
+  props.auth.logout();
+  return <Redirect to="/" />;
+};
 
 export default App;
