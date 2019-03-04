@@ -10,7 +10,6 @@ import {
   TextField,
   Checkbox,
   DefaultButton,
-  PrimaryButton,
   MessageBar,
   MessageBarType,
   Label
@@ -25,12 +24,6 @@ const Reservations = props => {
   const [reservationNumber, setReservationNumber] = useState("");
   const [onlyFuture, setOnlyFuture] = useState(false);
   const [onlyUnPaid, setOnlyUnPaid] = useState(false);
-
-  const clearFilter = () => {
-    setReservationNumber("");
-    setOnlyFuture(false);
-    setOnlyUnPaid(false);
-  };
 
   // Pagination
   const resultsPerPage = 9;
@@ -92,6 +85,10 @@ const Reservations = props => {
     fetchInitialReservations();
   }, []);
 
+  useEffect(() => {
+    fetchInitialReservations();
+  }, [onlyFuture, onlyUnPaid]);
+
   return (
     <div>
       <Header currentPage={props.location.pathname} />
@@ -112,16 +109,6 @@ const Reservations = props => {
             label="Bare ubetalte reservasjoner"
             checked={onlyUnPaid}
             onChange={(_, c) => setOnlyUnPaid(c)}
-          />
-          <DefaultButton
-            iconProps={{ iconName: "ClearFilter" }}
-            text="Tøm filter"
-            onClick={clearFilter}
-          />
-          <PrimaryButton
-            iconProps={{ iconName: "Filter" }}
-            text="Bruk filter"
-            onClick={fetchInitialReservations}
           />
           <Label>{count} treff</Label>
         </div>
