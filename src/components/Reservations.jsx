@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import Header from "./Header";
-import { BASE_URL } from "../config";
+import { fetchAPIData } from "../api";
 import ReservationCard from "./reservations/ReservationCard";
 import LoadingCard from "./reservations/LoadingCard";
 import styles from "./Reservations.module.css";
@@ -42,12 +42,7 @@ const Reservations = props => {
   const [page, setpage] = useState(0);
   const fetchReservations = async (url, reset, forward) => {
     setReservations([]);
-    const data = await (await fetch(url, {
-      headers: {
-        Authorization: `JWT ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json"
-      }
-    })).json();
+    const data = await fetchAPIData(url);
     if (data.results.length === 0) {
       setNoRes(true);
     }
@@ -79,11 +74,7 @@ const Reservations = props => {
       parameters = parameters + `id=${reservationNumber}&`;
     }
     parameters = parameters + `limit=${resultsPerPage}&`;
-    fetchReservations(
-      `${BASE_URL}/api/reservationdata/${parameters}`,
-      true,
-      true
-    );
+    fetchReservations(`/api/reservationdata/${parameters}`, true, true);
   };
 
   const fetchNextReservations = () => {
