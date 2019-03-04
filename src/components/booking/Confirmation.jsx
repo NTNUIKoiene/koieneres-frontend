@@ -2,7 +2,7 @@ import React from "react";
 import { Label, PrimaryButton, DefaultButton } from "office-ui-fabric-react";
 import styles from "../Booking.module.css";
 import { withRouter } from "react-router";
-import { BASE_URL } from "../../config";
+import { postAPIData } from "../../api";
 
 const Confirmation = ({
   selectedDates,
@@ -27,14 +27,7 @@ const Confirmation = ({
     selected_dates: selectedDates
   };
   const onSubmit = async () => {
-    const { id } = await (await fetch(`${BASE_URL}/api/create-reservation/`, {
-      method: "POST",
-      headers: {
-        Authorization: `JWT ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    })).json();
+    const { id } = await postAPIData("/api/create-reservation/", payload);
     history.push(`/reservations/${id}`);
   };
 

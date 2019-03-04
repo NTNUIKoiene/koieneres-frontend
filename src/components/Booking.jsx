@@ -27,7 +27,6 @@ import BedSelector from "./booking/BedSelector";
 import Cell from "./booking/Cell";
 import Help from "./booking/Help";
 import Confirmation from "./booking/Confirmation";
-import { BASE_URL } from "../config";
 import { fetchAPIData } from "../api";
 
 const Booking = props => {
@@ -62,23 +61,16 @@ const Booking = props => {
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
 
   const fetchReservationData = async () => {
-    try {
-      const statusData = await (await fetch(
-        `${BASE_URL}/api/status/?from=${format(
-          fromDate,
-          "YYYY-MM-DD"
-        )}&to=${format(toDate, "YYYY-MM-DD")}`
-      )).json();
-      setReservationData(statusData);
-    } catch (_) {
-      setErrorText("Klarte ikke å hente reservasjonsdata!");
-    }
+    const endpoint = `/api/status/?from=${format(
+      fromDate,
+      "YYYY-MM-DD"
+    )}&to=${format(toDate, "YYYY-MM-DD")}`;
+    const statusData = await fetchAPIData(endpoint);
+    setReservationData(statusData);
   };
 
   const fetchReservationPeriod = async () => {
-    const periodData = await (await fetch(
-      `${BASE_URL}/api/reservation-period/`
-    )).json();
+    const periodData = await fetchAPIData("/api/reservation-period/");
     setToDate(new Date(periodData.to));
   };
 
