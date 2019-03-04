@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./ReservationCard.module.css";
 import { format } from "date-fns";
 import { DefaultButton, PrimaryButton } from "office-ui-fabric-react";
+import { patchAPIData } from "../../api";
 import { BASE_URL } from "../../config";
 import { useState } from "react";
 
@@ -41,12 +42,14 @@ const ReservationCard = ({ reservation, reload }) => {
   };
 
   const [markAsPaidDisabled, setMarkAsPaidDisabled] = useState(false);
+  const [isPaidState, setIsPaidState] = useState(isPaid);
 
-  const onMarkAsPaidClick = async () => {
+  const onMarkAsPaidClick = async e => {
     setMarkAsPaidDisabled(true);
-    // TODO: api call
-    reload();
-    setMarkAsPaidDisabled(false);
+    await patchAPIData("/api/reservationdata/" + id, {
+      is_paid: true
+    });
+    setIsPaidState(true);
   };
 
   return (
@@ -90,7 +93,7 @@ const ReservationCard = ({ reservation, reload }) => {
         <div>
           <span className={styles.label}>Betalingsstatus:</span>
           {shouldPay ? (
-            isPaid ? (
+            isPaidState ? (
               <span className={styles.value}>Betalt</span>
             ) : (
               <span className={styles.unpaid}>Ubeltalt</span>
@@ -113,21 +116,20 @@ const ReservationCard = ({ reservation, reload }) => {
           >
             Kvittering
           </DefaultButton>
-          {!isPaid &&
-            shouldPay && (
-              <PrimaryButton
-                iconProps={
-                  markAsPaidDisabled
-                    ? { iconName: "Hourglass" }
-                    : { iconName: "Money" }
-                }
-                ariaLabel="Mark as paid"
-                text="Marker som betalt"
-                className={styles.payBtn}
-                disabled={markAsPaidDisabled}
-                onClick={onMarkAsPaidClick}
-              />
-            )}
+          {!isPaidState && shouldPay && (
+            <PrimaryButton
+              iconProps={
+                markAsPaidDisabled
+                  ? { iconName: "Hourglass" }
+                  : { iconName: "Money" }
+              }
+              ariaLabel="Mark as paid"
+              text="Marker som betalt"
+              className={styles.payBtn}
+              disabled={markAsPaidDisabled}
+              onClick={onMarkAsPaidClick}
+            />
+          )}
         </div>
       </section>
     </div>
