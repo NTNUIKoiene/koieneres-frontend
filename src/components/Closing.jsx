@@ -13,7 +13,10 @@ import {
   Label,
   DatePicker,
   DayOfWeek,
-  PrimaryButton
+  PrimaryButton,
+  TextField,
+  MessageBar,
+  MessageBarType
 } from "office-ui-fabric-react";
 
 const Closing = props => {
@@ -26,6 +29,8 @@ const Closing = props => {
     key: 0,
     text: "Velg koie"
   });
+  const [comment, setComment] = useState("");
+  const [showError, setShowError] = useState(false);
 
   const fetchData = async () => {
     const cabinData = await fetchAPIData("/api/cabin/");
@@ -51,68 +56,87 @@ const Closing = props => {
   };
 
   const addClosing = async () => {
+    setShowError(false);
     setIsLoading(true);
     const payload = {
       cabin: selectedCabin.key,
       fromDate: format(fromDate, "YYYY-MM-DD"),
-      toDate: format(toDate, "YYYY-MM-DD")
+      toDate: format(toDate, "YYYY-MM-DD"),
+      comment
     };
-    await postAPIData("/api/cabin-closings/", payload);
-    await fetchData();
+    try {
+      await postAPIData("/api/cabin-closings/", payload);
+      await fetchData();
+    } catch (_) {
+      setShowError(true);
+    }
     setIsLoading(false);
   };
 
   return (
     <div>
       <Header currentPage={props.location.pathname} />
-      <div className={styles.addContainer}>
-        <br />
-        <ComboBox
-          autoComplete="on"
-          options={cabins}
-          placeholder="Select or type an option"
-          text={selectedCabin.text}
-          onChange={(_, o) => setSelectedCabin(o)}
-        />
-        <Label htmlFor="fromDate">fra</Label>
-        <DatePicker
-          id="fromDate"
-          value={fromDate}
-          onSelectDate={d => setFromDate(d)}
-          strings={datePickerStrings}
-          firstDayOfWeek={DayOfWeek.Monday}
-          formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
-          minDate={new Date()}
-        />
-        <Label htmlFor="toDate">til</Label>
-        <DatePicker
-          id="toDate"
-          value={toDate}
-          onSelectDate={d => setToDate(d)}
-          minDate={fromDate}
-          string={datePickerStrings}
-          firstDayOfWeek={DayOfWeek.Monday}
-          formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
-        />
-        <PrimaryButton
-          text="Lagre"
-          onClick={addClosing}
-          iconProps={
-            isLoading ? { iconName: "Hourglass" } : { iconName: "Save" }
-          }
-          disabled={selectedCabin.key === 0 || isLoading}
-        />
-      </div>
-      <div className={styles.dataContainer}>
-        <h2>Eksisterende Stenginger:</h2>
-        {existingClosings.map((c, k) => (
-          <ExistingClosing
-            key={k}
-            closing={c}
-            deleteClick={() => deleteClosing(c.id)}
-            isLoading={isLoading}
+      <div className={styles.container}>
+        {showError && (
+          <MessageBar
+            className={styles.error}
+            messageBarType={MessageBarType.error}
+          >
+            Kunne ikke lagre stengingen!
+          </MessageBar>
+        )}
+        <div className={styles.addContainer}>
+          <h2>Steng en koie:</h2>
+          <ComboBox
+            autoComplete="on"
+            options={cabins}
+            placeholder="Select or type an option"
+            text={selectedCabin.text}
+            onChange={(_, o) => setSelectedCabin(o)}
           />
-        ))}
+          <DatePicker
+            label="Fra"
+            value={fromDate}
+            onSelectDate={d => setFromDate(d)}
+            strings={datePickerStrings}
+            firstDayOfWeek={DayOfWeek.Monday}
+            formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
+            minDate={new Date()}
+          />
+          <DatePicker
+            label="Til"
+            value={toDate}
+            onSelectDate={d => setToDate(d)}
+            minDate={fromDate}
+            string={datePickerStrings}
+            firstDayOfWeek={DayOfWeek.Monday}
+            formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
+          />
+          <TextField
+            value={comment}
+            onChange={e => setComment(e.target.value)}
+            label="Kommentar"
+          />
+          <PrimaryButton
+            text="Lagre"
+            onClick={addClosing}
+            iconProps={
+              isLoading ? { iconName: "Hourglass" } : { iconName: "Save" }
+            }
+            disabled={comment === "" || selectedCabin.key === 0 || isLoading}
+          />
+        </div>
+        <div className={styles.dataContainer}>
+          <h2>Eksisterende Stenginger:</h2>
+          {existingClosings.map((c, k) => (
+            <ExistingClosing
+              key={k}
+              closing={c}
+              deleteClick={() => deleteClosing(c.id)}
+              isLoading={isLoading}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

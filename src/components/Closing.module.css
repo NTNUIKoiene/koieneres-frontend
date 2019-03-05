@@ -22,15 +22,33 @@
   margin-left: 5px;
 }
 
+.container {
+  margin: auto;
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto;
+  grid-gap: 50px;
+  grid-template-areas:
+    "error error error"
+    "add data data"
+    ". data data";
+}
+
 .dataContainer {
-  margin: 10px;
+  grid-area: data;
+}
+
+.error {
+  grid-area: error;
+  margin-top: 20px;
 }
 
 .addContainer {
-  margin: 20px;
-  display: flex;
+  grid-area: add;
 }
 
-.addContainer > * {
-  margin-right: 10px !important;
+.addContainer > button {
+  float: right;
+  margin-top: 20px;
 }

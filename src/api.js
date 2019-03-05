@@ -31,8 +31,7 @@ const postAPIData = async (path, payload) => {
   if (!response.ok) {
     throw Error();
   }
-  const json = await response.json();
-  return json;
+  return await response.json();
 };
 
 const patchAPIData = async (path, payload) => {

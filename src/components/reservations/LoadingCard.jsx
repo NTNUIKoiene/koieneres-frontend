@@ -12,7 +12,7 @@ const LoadingCard = () => {
         <div>
           <Shimmer width="100%" height="25" />
         </div>
-        <hr />
+        <br />
         <div>
           <Shimmer width="100%" />
         </div>
@@ -25,7 +25,7 @@ const LoadingCard = () => {
         <div>
           <Shimmer width="100%" />
         </div>
-        <hr />
+        <br />
         <div>
           <Shimmer width="100%" />
         </div>
@@ -35,7 +35,7 @@ const LoadingCard = () => {
         <div>
           <Shimmer width="100%" />
         </div>
-        <hr />
+        <br />
         <div>
           <DefaultButton
             iconProps={{ iconName: "Edit" }}
