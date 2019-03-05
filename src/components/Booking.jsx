@@ -322,7 +322,7 @@ const Booking = props => {
               </MessageBar>
             )}
             <Label>
-              Koierrrr: <b>{selectedname}</b>
+              Koie: <b>{selectedname}</b>
             </Label>
             <Label>
               Datoer: <b>{selectedDates.map(sd => sd.dateKey).join(", ")}</b>
