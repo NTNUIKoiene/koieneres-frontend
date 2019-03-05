@@ -20,14 +20,19 @@ const deleteAPIData = async path => {
 };
 
 const postAPIData = async (path, payload) => {
-  return await (await fetch(`${BASE_URL}${path}`, {
+  const response = await fetch(`${BASE_URL}${path}`, {
     headers: {
       Authorization: `JWT ${localStorage.getItem("token")}`,
       "Content-Type": "application/json"
     },
     method: "POST",
     body: JSON.stringify(payload)
-  })).json();
+  });
+  if (!response.ok) {
+    throw Error();
+  }
+  const json = await response.json();
+  return json;
 };
 
 const patchAPIData = async (path, payload) => {
