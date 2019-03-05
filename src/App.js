@@ -10,6 +10,7 @@ import Booking from "./components/Booking";
 import Reservations from "./components/Reservations";
 import NotFound from "./components/NotFound";
 import Closing from "./components/Closing";
+import ReservationPeriod from "./components/ReservationPeriod";
 import Auth from "./auth";
 
 const authModule = new Auth();
@@ -22,6 +23,10 @@ class App extends Component {
           <PrivateRoute path="/reservations" component={Reservations} />
           <PrivateRoute path="/booking" component={Booking} />
           <PrivateRoute path="/closing" component={Closing} />
+          <PrivateRoute
+            path="/reservationperiod"
+            component={ReservationPeriod}
+          />
           <Route
             path="/logout"
             render={props => <Logout {...props} auth={authModule} />}

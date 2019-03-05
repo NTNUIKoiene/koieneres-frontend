@@ -71,6 +71,21 @@ const Header = props => {
               Steng Koie
             </Link>
           </li>
+          <li>
+            <Link
+              className={[
+                ColorClassNames.themeLighterAlt,
+                ColorClassNames.themeLightBackgroundHover,
+                currentPage === "/reservationperiod/"
+                  ? ColorClassNames.themeTertiaryBackground
+                  : "",
+                styles.link
+              ].join(" ")}
+              to="/reservationperiod/"
+            >
+              Reservasjonsperioder
+            </Link>
+          </li>
           {helpComponent && (
             <li className={styles.rightLink}>
               <IconButton
