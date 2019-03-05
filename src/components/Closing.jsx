@@ -10,7 +10,6 @@ import { fetchAPIData, deleteAPIData, postAPIData } from "../api";
 import {
   DefaultButton,
   ComboBox,
-  Label,
   DatePicker,
   DayOfWeek,
   PrimaryButton,
