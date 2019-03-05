@@ -16,10 +16,14 @@
 .label {
   display: inline-block;
   width: 120px;
+  color: rgb(51, 51, 51);
+  font-size: 14px;
 }
 
 .value {
   margin-left: 5px;
+  color: rgb(51, 51, 51);
+  font-size: 14px;
 }
 
 .container {
