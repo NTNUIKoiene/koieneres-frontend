@@ -56,3 +56,7 @@
   float: right;
   margin-top: 20px;
 }
+
+.info > div {
+  margin-top: 5px;
+}

@@ -2,7 +2,6 @@ import React from "react";
 import nb from "date-fns/locale/nb";
 import { addDays, format } from "date-fns";
 import { datePickerStrings } from "../utils/DatePickerStrings";
-
 import { useState, useEffect } from "react";
 import Header from "./Header";
 import styles from "./Closing.module.css";
@@ -15,7 +14,8 @@ import {
   PrimaryButton,
   TextField,
   MessageBar,
-  MessageBarType
+  MessageBarType,
+  Shimmer
 } from "office-ui-fabric-react";
 
 const Closing = props => {
@@ -30,6 +30,7 @@ const Closing = props => {
   });
   const [comment, setComment] = useState("");
   const [showError, setShowError] = useState(false);
+  const LoadingCardsNumber = 3;
 
   const fetchData = async () => {
     const cabinData = await fetchAPIData("/api/cabin/");
@@ -127,6 +128,10 @@ const Closing = props => {
         </div>
         <div className={styles.dataContainer}>
           <h2>Eksisterende Stenginger:</h2>
+          {existingClosings.length === 0 &&
+            Array(LoadingCardsNumber)
+              .fill()
+              .map((_, k) => <LoadingCard key={k} />)}
           {existingClosings.map((c, k) => (
             <ExistingClosing
               key={k}
@@ -169,5 +174,30 @@ const ExistingClosing = ({ closing, deleteClick, isLoading }) => {
     </div>
   );
 };
+
+const LoadingCard = () => (
+  <div className={styles.card}>
+    <h3>
+      <Shimmer width="100%" />
+    </h3>
+    <section className={styles.info}>
+      <div>
+        <Shimmer width="100%" />
+      </div>
+      <div>
+        <Shimmer width="100%" />
+      </div>
+      <div>
+        <Shimmer width="100%" />
+      </div>
+    </section>
+    <br />
+    <DefaultButton
+      text="Slett"
+      disabled={true}
+      iconProps={{ iconName: "Delete" }}
+    />
+  </div>
+);
 
 export default Closing;
