@@ -12,3 +12,27 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+h2 {
+  color: rgb(0, 87, 32);
+  font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI",
+    -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+  font-size: 21px;
+  font-weight: 100;
+}
+
+h3 {
+  color: rgb(0, 87, 32);
+  font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI",
+    -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+  font-size: 18px;
+  font-weight: 100;
+}
+
+p {
+  font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI",
+    -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  color: rgb(51, 51, 51);
+  font-weight: 400;
+}
