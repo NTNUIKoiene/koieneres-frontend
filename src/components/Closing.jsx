@@ -19,20 +19,22 @@ import {
 } from "office-ui-fabric-react";
 
 const Closing = props => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+
   const [cabins, setCabins] = useState([]);
   const [existingClosings, setExistingClosings] = useState([]);
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(addDays(new Date(), 1));
-  const [isLoading, setIsLoading] = useState(false);
+  const [comment, setComment] = useState("");
+  const [showError, setShowError] = useState(false);
   const [selectedCabin, setSelectedCabin] = useState({
     key: 0,
     text: "Velg koie"
   });
-  const [comment, setComment] = useState("");
-  const [showError, setShowError] = useState(false);
-  const LoadingCardsNumber = 3;
 
   const fetchData = async () => {
+    setIsFetching(true);
     const cabinData = await fetchAPIData("/api/cabin/");
     const existingClosingsData = await fetchAPIData("/api/cabin-closings/");
 
@@ -42,6 +44,7 @@ const Closing = props => {
       })
     );
     setExistingClosings(existingClosingsData.results);
+    setIsFetching(false);
   };
 
   useEffect(() => {
@@ -72,6 +75,27 @@ const Closing = props => {
     }
     setIsLoading(false);
   };
+
+  const loadingIndicators = Array(3)
+    .fill()
+    .map((_, k) => <LoadingCard key={k} />);
+
+  const closingCards = existingClosings.map((c, k) => (
+    <ExistingClosing
+      key={k}
+      closing={c}
+      deleteClick={() => deleteClosing(c.id)}
+      isLoading={isLoading}
+    />
+  ));
+
+  const noResultMessage = <h3>Ingen koier er planlagt stengt.</h3>;
+
+  let cards = loadingIndicators;
+
+  if (!isFetching) {
+    cards = existingClosings.length === 0 ? noResultMessage : closingCards;
+  }
 
   return (
     <div>
@@ -128,18 +152,7 @@ const Closing = props => {
         </div>
         <div className={styles.dataContainer}>
           <h2>Eksisterende Stenginger:</h2>
-          {existingClosings.length === 0 &&
-            Array(LoadingCardsNumber)
-              .fill()
-              .map((_, k) => <LoadingCard key={k} />)}
-          {existingClosings.map((c, k) => (
-            <ExistingClosing
-              key={k}
-              closing={c}
-              deleteClick={() => deleteClosing(c.id)}
-              isLoading={isLoading}
-            />
-          ))}
+          {cards}
         </div>
       </div>
     </div>
