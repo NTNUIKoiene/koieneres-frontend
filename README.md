@@ -4,6 +4,7 @@
 
 [![CircleCI](https://circleci.com/gh/NTNUIKoiene/koieneres-frontend/tree/master.svg?style=svg)](https://circleci.com/gh/NTNUIKoiene/koieneres-frontend/tree/master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/NTNUIKoiene/koieneres-frontend.svg)](https://greenkeeper.io/)
+[![Contributors](https://img.shields.io/github/contributors-anon/NTNUIKoiene/koieneres-frontend.svg)](https://github.com/NTNUIKoiene/koieneres-frontend/graphs/contributors)
 [![Commit history](https://img.shields.io/github/commit-activity/w/NTNUIKoiene/koieneres-frontend.svg?foo=bar)](https://github.com/NTNUIKoiene/koieneres-frontend/commits)
 
 
