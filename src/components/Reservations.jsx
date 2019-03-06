@@ -1,4 +1,5 @@
 import React from "react";
+import AdBlockerExtensionDetector from "@schibstedspain/sui-ad-blocker-extension-detector";
 import { useState, useEffect } from "react";
 import Header from "./Header";
 import { fetchAPIData } from "../api";
@@ -14,7 +15,6 @@ import {
   MessageBarType,
   Label
 } from "office-ui-fabric-react";
-import AdBlockerExtensionDetector from "@schibstedspain/sui-ad-blocker-extension-detector";
 
 const Reservations = props => {
   const [reservations, setReservations] = useState([]);
@@ -36,7 +36,8 @@ const Reservations = props => {
 
   const fetchReservations = async (url, reset, forward) => {
     setIsFetching(true);
-    const data = await fetchAPIData(url);
+    const trueUrl = `/api${url.split("/api")[1]}`;
+    const data = await fetchAPIData(trueUrl);
     setNext(data.next);
     setPrevious(data.previous);
     setCount(data.count);
