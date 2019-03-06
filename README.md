@@ -1,5 +1,7 @@
 # KoieneRes Frontend
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/NTNUIKoiene/koieneres-frontend.svg)](https://greenkeeper.io/)
+
 KoieneRes Frontend is the frontend application for the new reservation system for NTNUI Koiene. For the backend see the [here](https://github.com/NTNUIKoiene/koieneres-backend). An instance of the backend is running on [here](<[https://koieneres-api-dev.appspot.com/](https://koieneres-api-dev.appspot.com/api/)>). Swagger docs can be found [here](https://koieneres-api-dev.appspot.com/swagger/).
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
