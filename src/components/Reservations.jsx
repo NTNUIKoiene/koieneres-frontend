@@ -20,7 +20,6 @@ const Reservations = props => {
   const [reservations, setReservations] = useState([]);
 
   //Filters
-
   const [reservationNumber, setReservationNumber] = useState("");
   const [onlyFuture, setOnlyFuture] = useState(false);
   const [onlyUnPaid, setOnlyUnPaid] = useState(false);
@@ -28,17 +27,16 @@ const Reservations = props => {
   // Pagination
   const resultsPerPage = 9;
   const [count, setCount] = useState(0);
-  const [noRes, setNoRes] = useState(false);
   const [next, setNext] = useState(null);
   const [previous, setPrevious] = useState(null);
   const [pageCount, setpageCount] = useState(0);
   const [page, setpage] = useState(0);
+
+  const [isFetching, setIsFetching] = useState(true);
+
   const fetchReservations = async (url, reset, forward) => {
-    setReservations([]);
+    setIsFetching(true);
     const data = await fetchAPIData(url);
-    if (data.results.length === 0) {
-      setNoRes(true);
-    }
     setNext(data.next);
     setPrevious(data.previous);
     setCount(data.count);
@@ -52,6 +50,7 @@ const Reservations = props => {
       setpage(1);
     }
     setReservations(data.results);
+    setIsFetching(false);
   };
 
   const fetchInitialReservations = () => {
@@ -88,6 +87,26 @@ const Reservations = props => {
   useEffect(() => {
     fetchInitialReservations();
   }, [onlyFuture, onlyUnPaid]);
+
+  const loadingIndicators = Array(resultsPerPage)
+    .fill()
+    .map((_, k) => <LoadingCard key={k} />);
+
+  const reservationCards = reservations.map((r, i) => (
+    <ReservationCard
+      reservation={r}
+      key={i}
+      reload={fetchInitialReservations}
+    />
+  ));
+
+  const noResultMessage = <h3>Ingen reservasjoner.</h3>;
+
+  let cards = loadingIndicators;
+
+  if (!isFetching) {
+    cards = reservations.length === 0 ? noResultMessage : reservationCards;
+  }
 
   return (
     <div>
@@ -137,20 +156,7 @@ const Reservations = props => {
           </MessageBar>
         </div>
       </AdBlockerExtensionDetector>
-      <main className={styles.cardcontainer}>
-        {noRes && "No results"}
-        {reservations.length === 0 &&
-          Array(resultsPerPage)
-            .fill()
-            .map((_, k) => <LoadingCard key={k} />)}
-        {reservations.map((r, i) => (
-          <ReservationCard
-            reservation={r}
-            key={i}
-            reload={fetchInitialReservations}
-          />
-        ))}
-      </main>
+      <main className={styles.cardcontainer}>{cards}</main>
     </div>
   );
 };
