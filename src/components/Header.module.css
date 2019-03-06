@@ -29,10 +29,11 @@
 
 .rightLink {
   float: right !important;
+  margin-right: 15px;
 }
 
 .helpButton {
-  height: 49px !important;
+  padding-top: 15px;
   color: white !important;
 }
 
