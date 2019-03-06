@@ -28,29 +28,13 @@ import Cell from "./booking/Cell";
 import Help from "./booking/Help";
 import Confirmation from "./booking/Confirmation";
 import { fetchAPIData } from "../api";
+import { useUserConfig } from "../hooks";
 
 const Booking = props => {
   // General state
   const [errorText, setErrorText] = useState("");
 
-  const [userConfig, setUserConfig] = useState({
-    isBoard: false,
-    maxNights: 3,
-    username: ""
-  });
-
-  const fetchUserConfig = async () => {
-    const data = await fetchAPIData("/api/current-user/");
-    setUserConfig({
-      isBoard: data.isCabinBoard,
-      maxNights: 3,
-      username: data.username
-    });
-  };
-
-  useEffect(() => {
-    fetchUserConfig();
-  }, []);
+  const userConfig = useUserConfig();
 
   /*
       MATRIX SECTION
