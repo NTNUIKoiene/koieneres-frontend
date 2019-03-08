@@ -94,7 +94,7 @@ const Booking = props => {
   ];
 
   // Produce a column for each day in range
-  for (let i = 0; i < deltaDays; i++) {
+  for (let i = 0; i <= deltaDays; i++) {
     const day = addDays(fromDate, i);
     const key = format(day, "YYYY-MM-DD");
     dataColumns.push({
