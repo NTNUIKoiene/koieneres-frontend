@@ -1,6 +1,6 @@
 import React from "react";
 import AdBlockerExtensionDetector from "@schibstedspain/sui-ad-blocker-extension-detector";
-import { useState, useEffect } from "react";
+import { useEffect, useReducer } from "react";
 import Header from "./Header";
 import { fetchAPIData } from "../api";
 import ReservationCard from "./reservations/ReservationCard";
@@ -16,88 +16,89 @@ import {
   Label
 } from "office-ui-fabric-react";
 
+const initalState = {
+  isFetching: true,
+  reservations: [],
+  reservationNumber: "",
+  onlyFuture: false,
+  onlyUnPaid: false,
+  resultsPerPage: 9,
+  count: 0,
+  next: null,
+  previous: null,
+  pageCount: 1,
+  page: 1
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "FETCH_INIT":
+      return { ...state, isFetching: true };
+    case "FETCH_SUCCESS":
+      return {
+        ...state,
+        isFetching: false,
+        reservations: action.payload.results,
+        next: action.payload.next,
+        previous: action.payload.previous,
+        count: action.payload.count,
+        pageCount: Math.ceil(action.payload.count / state.resultsPerPage)
+      };
+    case "ONLY_UNPAID_CHANGE":
+      return { ...state, onlyUnPaid: action.payload };
+    case "ONLY_FUTURE_CHANGE":
+      return { ...state, onlyFuture: action.payload };
+    default:
+      throw new Error("Unkown action");
+  }
+};
+
 const Reservations = props => {
-  const [reservations, setReservations] = useState([]);
+  const [state, dispatch] = useReducer(reducer, initalState);
 
-  //Filters
-  const [reservationNumber, setReservationNumber] = useState("");
-  const [onlyFuture, setOnlyFuture] = useState(false);
-  const [onlyUnPaid, setOnlyUnPaid] = useState(false);
+  const getParams = offset => {
+    const encodeQueryData = data => {
+      const ret = [];
+      for (let d in data)
+        ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
+      return ret.join("&");
+    };
 
-  // Pagination
-  const resultsPerPage = 9;
-  const [count, setCount] = useState(0);
-  const [next, setNext] = useState(null);
-  const [previous, setPrevious] = useState(null);
-  const [pageCount, setpageCount] = useState(0);
-  const [page, setpage] = useState(0);
-
-  const [isFetching, setIsFetching] = useState(true);
-
-  const fetchReservations = async (url, reset, forward) => {
-    setIsFetching(true);
-    const trueUrl = `/api${url.split("/api")[1]}`;
-    const data = await fetchAPIData(trueUrl);
-    setNext(data.next);
-    setPrevious(data.previous);
-    setCount(data.count);
-    setpageCount(Math.ceil(data.count / resultsPerPage));
-    if (forward) {
-      setpage(page + 1);
-    } else {
-      setpage(page - 1);
+    let base = {
+      limit: state.resultsPerPage
+    };
+    if (state.onlyFuture) {
+      base = { ...base, after_date: format(new Date(), "YYYY-MM-DD") };
     }
-    if (reset) {
-      setpage(1);
+    if (state.onlyUnPaid) {
+      base = { ...base, is_paid: false, should_pay: true };
     }
-    setReservations(data.results);
-    setIsFetching(false);
+    if (state.reservationNumber.length > 0) {
+      base = { ...base, id: state.reservationNumber };
+    }
+    return encodeQueryData(base);
   };
 
-  const fetchInitialReservations = () => {
-    let parameters = "?";
-    if (onlyFuture) {
-      parameters =
-        parameters + `after_date=${format(new Date(), "YYYY-MM-DD")}&`;
-    }
-    if (onlyUnPaid) {
-      parameters = parameters + "is_paid=false&should_pay=true&";
-    }
-    if (reservationNumber.length > 0) {
-      parameters = parameters + `id=${reservationNumber}&`;
-    }
-    parameters = parameters + `limit=${resultsPerPage}&`;
-    fetchReservations(`/api/reservationdata/${parameters}`, true, true);
-  };
-
-  const fetchNextReservations = () => {
-    if (next) {
-      fetchReservations(next, false, true);
-    }
-  };
-  const fetchPreviousReservations = () => {
-    if (previous) {
-      fetchReservations(previous, false, false);
-    }
+  const fetchReservations = async url => {
+    dispatch({ type: "FETCH_INIT" });
+    const data = await fetchAPIData(url);
+    dispatch({ type: "FETCH_SUCCESS", payload: data });
   };
 
   useEffect(() => {
-    fetchInitialReservations();
-  }, []);
+    const url = `/api/reservationdata/?${getParams()}`;
+    fetchReservations(url);
+  }, [state.onlyUnPaid, state.onlyFuture]);
 
-  useEffect(() => {
-    fetchInitialReservations();
-  }, [onlyFuture, onlyUnPaid]);
-
-  const loadingIndicators = Array(resultsPerPage)
+  const loadingIndicators = Array(state.resultsPerPage)
     .fill()
     .map((_, k) => <LoadingCard key={k} />);
 
-  const reservationCards = reservations.map((r, i) => (
+  const reservationCards = state.reservations.map((r, i) => (
     <ReservationCard
       reservation={r}
       key={i}
-      reload={fetchInitialReservations}
+      reload={() => console.log("implement")}
     />
   ));
 
@@ -105,8 +106,9 @@ const Reservations = props => {
 
   let cards = loadingIndicators;
 
-  if (!isFetching) {
-    cards = reservations.length === 0 ? noResultMessage : reservationCards;
+  if (!state.isFetching) {
+    cards =
+      state.reservations.length === 0 ? noResultMessage : reservationCards;
   }
 
   return (
@@ -116,37 +118,41 @@ const Reservations = props => {
         <div className={styles.filterContainer}>
           <TextField
             placeholder="Reservasjonsnummer"
-            value={reservationNumber}
-            onChange={e => setReservationNumber(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && fetchInitialReservations()}
+            value={state.reservationNumber}
+            onChange={e => console.log("implement")}
+            // onKeyDown={e => e.key === "Enter" && fetchInitialReservations()}
           />
           <Checkbox
             label="Bare fremtidige reservasjoner"
-            checked={onlyFuture}
-            onChange={(_, c) => setOnlyFuture(c)}
+            checked={state.onlyFuture}
+            onChange={(_, c) =>
+              dispatch({ type: "ONLY_FUTURE_CHANGE", payload: c })
+            }
           />
           <Checkbox
             label="Bare ubetalte reservasjoner"
-            checked={onlyUnPaid}
-            onChange={(_, c) => setOnlyUnPaid(c)}
+            checked={state.onlyUnPaid}
+            onChange={(_, c) =>
+              dispatch({ type: "ONLY_UNPAID_CHANGE", payload: c })
+            }
           />
-          <Label>{count} treff</Label>
+          <Label>{state.count} treff</Label>
         </div>
         <div className={styles.paginationContainer}>
           <DefaultButton
             iconProps={{ iconName: "CaretSolidLeft" }}
-            onClick={fetchPreviousReservations}
+            onClick={() => console.log(state.previous)}
             ariaLabel="Previous page"
-            disabled={previous === null}
+            disabled={state.previous === null}
           />
           <Label>
-            {page} / {pageCount}
+            {state.page} / {state.pageCount}
           </Label>
           <DefaultButton
             iconProps={{ iconName: "CaretSolidRight" }}
-            onClick={fetchNextReservations}
+            onClick={() => console.log("api/" + state.next.split("api/")[1])}
             ariaLabel="Next page"
-            disabled={next === null}
+            disabled={state.next === null}
           />
         </div>
       </div>
