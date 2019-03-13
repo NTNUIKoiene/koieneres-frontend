@@ -8,9 +8,9 @@ import {
   TextField,
   Checkbox
 } from "office-ui-fabric-react";
-import { patchAPIData } from "../../api";
 import { BASE_URL } from "../../config";
 import { useState } from "react";
+import axios from "axios";
 
 const ReservationCard = ({ reservation, reload }) => {
   if (reservation.reservationItems.length === 0) return null;
@@ -59,7 +59,7 @@ const ReservationCard = ({ reservation, reload }) => {
   };
 
   const onEditConfirmClick = async () => {
-    await patchAPIData("/api/reservationdata/" + id, {
+    await axios.patch(`${BASE_URL}/api/reservationdata/${id}`, {
       name: nameState,
       membershipNumber: membershipNumberState,
       phone: phoneState,
@@ -73,7 +73,7 @@ const ReservationCard = ({ reservation, reload }) => {
 
   const onMarkAsPaidClick = async e => {
     setMarkAsPaidDisabled(true);
-    await patchAPIData("/api/reservationdata/" + id, {
+    await axios.patch(`${BASE_URL}/api/reservationdata/${id}`, {
       isPaid: true
     });
     reload();
