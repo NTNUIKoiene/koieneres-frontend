@@ -2,7 +2,6 @@ import React from "react";
 import { useState, useEffect } from "react";
 import Header from "./Header";
 import styles from "./Booking.module.css";
-// import { Prompt } from "react-router-dom";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
 import { datePickerStrings } from "../utils/DatePickerStrings";
 import { getUpdatedSelectedDates } from "../utils/Utils";
@@ -27,8 +26,9 @@ import BedSelector from "./booking/BedSelector";
 import Cell from "./booking/Cell";
 import Help from "./booking/Help";
 import Confirmation from "./booking/Confirmation";
-import { fetchAPIData } from "../api";
 import { useUserConfig } from "../hooks";
+import axios from "axios";
+import { BASE_URL } from "../config";
 
 const Booking = props => {
   // General state
@@ -45,17 +45,28 @@ const Booking = props => {
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
 
   const fetchReservationData = async () => {
-    const endpoint = `/api/status/?from=${format(
-      fromDate,
-      "YYYY-MM-DD"
-    )}&to=${format(toDate, "YYYY-MM-DD")}`;
-    const statusData = await fetchAPIData(endpoint);
-    setReservationData(statusData);
+    try {
+      const status = (await axios.get(`${BASE_URL}/api/status/`, {
+        params: {
+          from: format(fromDate, "YYYY-MM-DD"),
+          to: format(toDate, "YYYY-MM-DD")
+        }
+      })).data;
+      setReservationData(status);
+    } catch (_) {
+      setErrorText("Klarte ikke å hente reservasjonsstatus!");
+    }
   };
 
   const fetchReservationPeriod = async () => {
-    const periodData = await fetchAPIData("/api/reservation-period/");
-    setToDate(new Date(periodData.to));
+    try {
+      const periodData = (await axios.get(
+        `${BASE_URL}/api/reservation-period/`
+      )).data;
+      setToDate(new Date(periodData.to));
+    } catch (_) {
+      setErrorText("Klare ikke å hente reservasjonsperioden!");
+    }
   };
 
   useEffect(() => {

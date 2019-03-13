@@ -19,6 +19,7 @@ const fakeAuth = {
 
 */
 import { BASE_URL } from "./config";
+import axios from "axios";
 
 export default class Auth {
   constructor() {
@@ -41,6 +42,9 @@ export default class Auth {
     if (response.status === 200) {
       this.token = json.token;
       localStorage.setItem("token", json.token);
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `JWT ${localStorage.getItem("token")}`;
       this.authenticated = true;
       return true;
     } else {
@@ -72,6 +76,9 @@ export default class Auth {
       this.token = json.token;
       localStorage.setItem("token", json.token);
       this.authenticated = true;
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `JWT ${localStorage.getItem("token")}`;
       return true;
     } else {
       localStorage.removeItem("token");

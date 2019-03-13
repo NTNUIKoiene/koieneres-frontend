@@ -2,7 +2,6 @@ import React from "react";
 import AdBlockerExtensionDetector from "@schibstedspain/sui-ad-blocker-extension-detector";
 import { useState, useEffect } from "react";
 import Header from "./Header";
-import { fetchAPIData } from "../api";
 import ReservationCard from "./reservations/ReservationCard";
 import LoadingCard from "./reservations/LoadingCard";
 import styles from "./Reservations.module.css";
@@ -15,9 +14,12 @@ import {
   MessageBarType,
   Label
 } from "office-ui-fabric-react";
+import axios from "axios";
+import { BASE_URL } from "../config";
 
 const Reservations = props => {
   const [reservations, setReservations] = useState([]);
+  const [showError, setShowError] = useState(false);
 
   //Filters
   const [reservationNumber, setReservationNumber] = useState("");
@@ -34,50 +36,52 @@ const Reservations = props => {
 
   const [isFetching, setIsFetching] = useState(true);
 
-  const fetchReservations = async (url, reset, forward) => {
+  const fetchReservations = async (url, params, reset, forward) => {
+    setShowError(false);
     setIsFetching(true);
-    const trueUrl = `/api${url.split("/api")[1]}`;
-    const data = await fetchAPIData(trueUrl);
-    setNext(data.next);
-    setPrevious(data.previous);
-    setCount(data.count);
-    setpageCount(Math.ceil(data.count / resultsPerPage));
-    if (forward) {
-      setpage(page + 1);
-    } else {
-      setpage(page - 1);
+    try {
+      const data = (await axios.get(url, { params })).data;
+      setNext(data.next);
+      setPrevious(data.previous);
+      setCount(data.count);
+      setpageCount(Math.ceil(data.count / resultsPerPage));
+      if (forward) {
+        setpage(page + 1);
+      } else {
+        setpage(page - 1);
+      }
+      if (reset) {
+        setpage(1);
+      }
+      setReservations(data.results);
+    } catch (_) {
+      setShowError(true);
     }
-    if (reset) {
-      setpage(1);
-    }
-    setReservations(data.results);
     setIsFetching(false);
   };
 
   const fetchInitialReservations = () => {
-    let parameters = "?";
+    let params = { limit: resultsPerPage };
     if (onlyFuture) {
-      parameters =
-        parameters + `after_date=${format(new Date(), "YYYY-MM-DD")}&`;
+      params = { ...params, after_date: `${format(new Date(), "YYYY-MM-DD")}` };
     }
     if (onlyUnPaid) {
-      parameters = parameters + "is_paid=false&should_pay=true&";
+      params = { ...params, is_paid: "false", should_pay: "true" };
     }
     if (reservationNumber.length > 0) {
-      parameters = parameters + `id=${reservationNumber}&`;
+      params = { ...params, id: reservationNumber };
     }
-    parameters = parameters + `limit=${resultsPerPage}&`;
-    fetchReservations(`/api/reservationdata/${parameters}`, true, true);
+    fetchReservations(`${BASE_URL}/api/reservationdata/`, params, true, true);
   };
 
   const fetchNextReservations = () => {
     if (next) {
-      fetchReservations(next, false, true);
+      fetchReservations(next, {}, false, true);
     }
   };
   const fetchPreviousReservations = () => {
     if (previous) {
-      fetchReservations(previous, false, false);
+      fetchReservations(previous, {}, false, false);
     }
   };
 
@@ -112,6 +116,14 @@ const Reservations = props => {
   return (
     <div>
       <Header currentPage={props.location.pathname} />
+      {showError && (
+        <MessageBar
+          className={styles.error}
+          messageBarType={MessageBarType.error}
+        >
+          Noe gikk galt!
+        </MessageBar>
+      )}
       <div className={styles.toolbar}>
         <div className={styles.filterContainer}>
           <TextField

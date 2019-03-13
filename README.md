@@ -7,7 +7,6 @@
 [![Contributors](https://img.shields.io/github/contributors-anon/NTNUIKoiene/koieneres-frontend.svg)](https://github.com/NTNUIKoiene/koieneres-frontend/graphs/contributors)
 [![Commit history](https://img.shields.io/github/commit-activity/w/NTNUIKoiene/koieneres-frontend.svg?foo=bar)](https://github.com/NTNUIKoiene/koieneres-frontend/commits)
 
-
 ## About
 
 KoieneRes Frontend is the frontend application for the new reservation system for NTNUI Koiene. For the backend see the [here](https://github.com/NTNUIKoiene/koieneres-backend). An instance of the backend is running on [here](<[https://koieneres-api-dev.appspot.com/](https://koieneres-api-dev.appspot.com/api/)>). Swagger docs can be found [here](https://koieneres-api-dev.appspot.com/swagger/).
@@ -22,7 +21,13 @@ When creating a commit the code is automatically prettified using [Husky](https:
 
 Commits to the master branch are built and deployed by CircleCI. Note that build with warnings (such as unused variables) will fail.
 
-## CSS Modules
+## Code
+
+### HTTP Requests
+
+Koieneres uses [Axios](https://github.com/axios/axios) for API requests. All HTTP requests should be wrapped in try catch blocks with appropriate error handling. The JWT token is automatically added to all requests.
+
+### CSS Modules
 
 This project uses CSS modules to prevent naming conflicts.
 

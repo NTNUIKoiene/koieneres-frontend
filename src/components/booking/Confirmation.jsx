@@ -2,7 +2,8 @@ import React from "react";
 import { Label, PrimaryButton, DefaultButton } from "office-ui-fabric-react";
 import styles from "../Booking.module.css";
 import { withRouter } from "react-router";
-import { postAPIData } from "../../api";
+import axios from "axios";
+import { BASE_URL } from "../../config";
 
 const Confirmation = ({
   selectedDates,
@@ -27,7 +28,10 @@ const Confirmation = ({
     selected_dates: selectedDates
   };
   const onSubmit = async () => {
-    const { id } = await postAPIData("/api/create-reservation/", payload);
+    const { id } = (await axios.post(
+      `${BASE_URL}/api/create-reservation/`,
+      payload
+    )).data;
     history.push(`/reservations/${id}`);
   };
 

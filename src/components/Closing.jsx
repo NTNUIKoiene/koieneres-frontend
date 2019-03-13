@@ -5,7 +5,6 @@ import { datePickerStrings } from "../utils/DatePickerStrings";
 import { useState, useEffect } from "react";
 import Header from "./Header";
 import styles from "./Closing.module.css";
-import { fetchAPIData, deleteAPIData, postAPIData } from "../api";
 import {
   DefaultButton,
   ComboBox,
@@ -17,6 +16,8 @@ import {
   MessageBarType,
   Shimmer
 } from "office-ui-fabric-react";
+import axios from "axios";
+import { BASE_URL } from "../config";
 
 const Closing = props => {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,15 +36,21 @@ const Closing = props => {
 
   const fetchData = async () => {
     setIsFetching(true);
-    const cabinData = await fetchAPIData("/api/cabin/");
-    const existingClosingsData = await fetchAPIData("/api/cabin-closings/");
+    try {
+      const cabinData = (await axios.get(`${BASE_URL}/api/cabin/`)).data;
+      const existingClosingsData = (await axios.get(
+        `${BASE_URL}/api/cabin-closings/`
+      )).data;
+      setCabins(
+        cabinData.results.map(c => {
+          return { key: c.id, text: c.name };
+        })
+      );
+      setExistingClosings(existingClosingsData.results);
+    } catch (_) {
+      setShowError(true);
+    }
 
-    setCabins(
-      cabinData.results.map(c => {
-        return { key: c.id, text: c.name };
-      })
-    );
-    setExistingClosings(existingClosingsData.results);
     setIsFetching(false);
   };
 
@@ -53,8 +60,12 @@ const Closing = props => {
 
   const deleteClosing = async id => {
     setIsLoading(true);
-    await deleteAPIData(`/api/cabin-closings/${id}/`);
-    await fetchData();
+    try {
+      await axios.delete(`${BASE_URL}/api/cabin-closings/${id}/`);
+      await fetchData();
+    } catch (_) {
+      setShowError(true);
+    }
     setIsLoading(false);
   };
 
@@ -68,7 +79,7 @@ const Closing = props => {
       comment
     };
     try {
-      await postAPIData("/api/cabin-closings/", payload);
+      await axios.post(`${BASE_URL}/api/cabin-closings/`, payload);
       await fetchData();
     } catch (_) {
       setShowError(true);
@@ -106,7 +117,7 @@ const Closing = props => {
             className={styles.error}
             messageBarType={MessageBarType.error}
           >
-            Kunne ikke lagre stengingen!
+            Noe gikk galt!
           </MessageBar>
         )}
         <div className={styles.addContainer}>
