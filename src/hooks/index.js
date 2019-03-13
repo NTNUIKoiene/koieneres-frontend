@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { fetchAPIData } from "../api";
+import axios from "axios";
+import { BASE_URL } from "../config";
 
 const useUserConfig = () => {
   const [userConfig, setUserConfig] = useState({
@@ -9,7 +10,7 @@ const useUserConfig = () => {
   });
 
   const fetchUserConfig = async () => {
-    const data = await fetchAPIData("/api/current-user/");
+    const data = (await axios.get(`${BASE_URL}/api/current-user/`)).data;
     setUserConfig({
       isBoard: data.isCabinBoard,
       maxNights: 3,
