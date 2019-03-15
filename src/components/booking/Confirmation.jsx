@@ -1,5 +1,11 @@
-import React from "react";
-import { Label, PrimaryButton, DefaultButton } from "office-ui-fabric-react";
+import React, { useState } from "react";
+import {
+  Label,
+  PrimaryButton,
+  DefaultButton,
+  MessageBar,
+  MessageBarType
+} from "office-ui-fabric-react";
 import styles from "../Booking.module.css";
 import { withRouter } from "react-router";
 import axios from "axios";
@@ -27,12 +33,20 @@ const Confirmation = ({
     should_pay: shouldPay,
     selected_dates: selectedDates
   };
+
+  const [showError, setShowError] = useState(false);
+
   const onSubmit = async () => {
-    const { id } = (await axios.post(
-      `${BASE_URL}/api/create-reservation/`,
-      payload
-    )).data;
-    history.push(`/reservations/${id}`);
+    setShowError(false);
+    try {
+      const { id } = (await axios.post(
+        `${BASE_URL}/api/create-reservation/`,
+        payload
+      )).data;
+      history.push(`/reservations/${id}`);
+    } catch (_) {
+      setShowError(true);
+    }
   };
 
   return (
@@ -81,6 +95,18 @@ const Confirmation = ({
         <Label>
           Totalpris: <b>{totalPrice}</b>
         </Label>
+        {showError && (
+          <>
+            <MessageBar
+              messageBarType={MessageBarType.error}
+              isMultiline={false}
+            >
+              Noe gikk galt, klarte ikke å lagre reservasjonen!
+            </MessageBar>
+            <br />
+          </>
+        )}
+
         <div className={styles.right}>
           <PrimaryButton className={styles.right} onClick={onSubmit}>
             Utfør Reservasjon
