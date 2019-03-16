@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import {
   MessageBar,
@@ -14,6 +14,7 @@ import { datePickerStrings } from "../utils/DatePickerStrings";
 import styles from "./ExtendedPeriods.module.css";
 import axios from "axios";
 import { BASE_URL } from "../config";
+import Card from "./common/Card";
 
 const computeRestrictedDates = acceptFn => {
   const dates = [];
@@ -36,6 +37,24 @@ const ExtendedPeriod = props => {
   const [description, setDescription] = useState("");
   const [reservationDate, setReservationDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [extensions, setExtensions] = useState([]);
+  console.log("extensions: ", extensions);
+
+  const fetchExtensions = async () => {
+    setIsLoading(true);
+    try {
+      const data = (await axios.get(`${BASE_URL}/api/extended-periods`)).data
+        .results;
+      setExtensions(data);
+    } catch (_) {
+      setShowError(true);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchExtensions();
+  }, []);
 
   const addExtension = async () => {
     setShowError(false);
@@ -111,6 +130,16 @@ const ExtendedPeriod = props => {
         </div>
         <div className={styles.dataContainer}>
           <h2>Eksisterende utvidelser:</h2>
+          {extensions.map((e, k) => (
+            <Card key={k}>
+              <h3>{e.description}</h3>
+              <p>
+                Reservasjonsdato: {e.reservationDate}
+                <br />
+                Sluttdato: {e.endDate}
+              </p>
+            </Card>
+          ))}
         </div>
       </div>
     </div>
