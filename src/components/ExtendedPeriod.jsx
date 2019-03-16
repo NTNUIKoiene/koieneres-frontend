@@ -7,7 +7,8 @@ import {
   Calendar,
   Label,
   DayOfWeek,
-  TextField
+  TextField,
+  DefaultButton
 } from "office-ui-fabric-react";
 import { addDays, isWednesday, isThursday, format } from "date-fns";
 import { datePickerStrings } from "../utils/DatePickerStrings";
@@ -15,6 +16,7 @@ import styles from "./ExtendedPeriods.module.css";
 import axios from "axios";
 import { BASE_URL } from "../config";
 import Card from "./common/Card";
+import LoadingCard from "./common/LoadingCard";
 
 const computeRestrictedDates = acceptFn => {
   const dates = [];
@@ -32,13 +34,12 @@ const restrictedListThursday = computeRestrictedDates(isThursday);
 
 const ExtendedPeriod = props => {
   const [showError, setShowError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [description, setDescription] = useState("");
   const [reservationDate, setReservationDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [extensions, setExtensions] = useState([]);
-  console.log("extensions: ", extensions);
 
   const fetchExtensions = async () => {
     setIsLoading(true);
@@ -66,6 +67,19 @@ const ExtendedPeriod = props => {
         description
       };
       await axios.post(`${BASE_URL}/api/extended-periods/`, payload);
+      fetchExtensions();
+    } catch (_) {
+      setShowError(true);
+    }
+    setIsLoading(false);
+  };
+
+  const deleteExtension = async id => {
+    setShowError(false);
+    setIsLoading(true);
+    try {
+      await axios.delete(`${BASE_URL}/api/extended-periods/${id}/`);
+      await fetchExtensions();
     } catch (_) {
       setShowError(true);
     }
@@ -125,11 +139,18 @@ const ExtendedPeriod = props => {
             iconProps={
               isLoading ? { iconName: "Hourglass" } : { iconName: "Save" }
             }
-            disabled={isLoading}
+            disabled={isLoading || description.length === 0}
           />
         </div>
         <div className={styles.dataContainer}>
           <h2>Eksisterende utvidelser:</h2>
+          {isLoading &&
+            extensions.length === 0 &&
+            Array(3)
+              .fill()
+              .map((_, k) => (
+                <LoadingCard key={k} template="s.ss" buttonLabels={["Slett"]} />
+              ))}
           {extensions.map((e, k) => (
             <Card key={k}>
               <h3>{e.description}</h3>
@@ -138,6 +159,12 @@ const ExtendedPeriod = props => {
                 <br />
                 Sluttdato: {e.endDate}
               </p>
+              <DefaultButton
+                text="Slett"
+                iconProps={{ iconName: isLoading ? "Hourglass" : "Delete" }}
+                disabled={isLoading}
+                onClick={() => deleteExtension(e.id)}
+              />
             </Card>
           ))}
         </div>
