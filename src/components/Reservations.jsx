@@ -87,10 +87,6 @@ const Reservations = props => {
 
   useEffect(() => {
     fetchInitialReservations();
-  }, []);
-
-  useEffect(() => {
-    fetchInitialReservations();
   }, [onlyFuture, onlyUnPaid]);
 
   const loadingIndicators = Array(resultsPerPage)
