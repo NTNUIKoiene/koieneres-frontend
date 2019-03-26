@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import Header from "./Header";
 import styles from "./Booking.module.css";
@@ -449,6 +450,12 @@ const Booking = props => {
       </div>
     </>
   );
+};
+
+Booking.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired
+  }).isRequired
 };
 
 export default Booking;

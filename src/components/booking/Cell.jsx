@@ -1,5 +1,5 @@
 import React from "react";
-
+import PropTypes from "prop-types";
 import styles from "../Booking.module.css";
 import { TooltipHost } from "office-ui-fabric-react";
 
@@ -34,6 +34,17 @@ const Cell = ({ item, day, selectedDates, onCellClick }) => {
       </div>
     </TooltipHost>
   );
+};
+
+Cell.propTypes = {
+  item: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    data: PropTypes.object.isRequired,
+    size: PropTypes.number.isRequired
+  }).isRequired,
+  day: PropTypes.string.isRequired,
+  selectedDates: PropTypes.array.isRequired,
+  onCellClick: PropTypes.func.isRequired
 };
 
 export default Cell;

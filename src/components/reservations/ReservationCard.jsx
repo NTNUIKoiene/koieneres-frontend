@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import styles from "./ReservationCard.module.css";
 import { format } from "date-fns";
 import {
@@ -222,6 +223,21 @@ const ReservationCard = ({ reservation, reload }) => {
       </div>
     </div>
   );
+};
+
+ReservationCard.propTypes = {
+  reload: PropTypes.func.isRequired,
+  reservation: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    createdAt: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    shouldPay: PropTypes.bool.isRequired,
+    isPaid: PropTypes.bool.isRequired,
+    membershipNumber: PropTypes.string.isRequired,
+    phone: PropTypes.string.isRequired,
+    totalPrice: PropTypes.number.isRequired
+  }).isRequired
 };
 
 export default ReservationCard;

@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ColorClassNames, FontClassNames } from "@uifabric/styling";
@@ -128,6 +129,11 @@ const Header = props => {
       </Modal>
     </div>
   );
+};
+
+Header.propTypes = {
+  currentPage: PropTypes.string.isRequired,
+  helpComponent: PropTypes.element
 };
 
 export default Header;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import Header from "./Header";
 import {
   MessageBar,
@@ -171,6 +172,12 @@ const ExtendedPeriod = props => {
       </div>
     </div>
   );
+};
+
+ExtendedPeriod.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired
+  }).isRequired
 };
 
 export default ExtendedPeriod;
