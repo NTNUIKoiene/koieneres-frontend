@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import nb from "date-fns/locale/nb";
 import { addDays, format } from "date-fns";
 import { datePickerStrings } from "../utils/DatePickerStrings";
@@ -223,5 +224,11 @@ const LoadingCard = () => (
     />
   </div>
 );
+
+Closing.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired
+  }).isRequired
+};
 
 export default Closing;

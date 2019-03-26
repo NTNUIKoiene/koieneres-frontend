@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import {
   BrowserRouter as Router,
   Route,
@@ -58,9 +59,19 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   />
 );
 
+PrivateRoute.propTypes = {
+  component: PropTypes.func.isRequired
+};
+
 const Logout = props => {
   props.auth.logout();
   return <Redirect to="/" />;
+};
+
+Logout.propTypes = {
+  auth: PropTypes.shape({
+    logout: PropTypes.func.isRequired
+  }).isRequired
 };
 
 export default App;

@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { withRouter, Redirect } from "react-router-dom";
 import styles from "./Login.module.css";
@@ -87,6 +88,17 @@ const Login = props => {
       </div>
     </div>
   );
+};
+
+Login.propTypes = {
+  location: PropTypes.shape({
+    state: PropTypes.object
+  }).isRequired,
+  auth: PropTypes.shape({
+    login: PropTypes.func.isRequired,
+    refresh: PropTypes.func.isRequired,
+    authenticated: PropTypes.bool.isRequired
+  }).isRequired
 };
 
 export default withRouter(Login);

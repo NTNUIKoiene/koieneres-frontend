@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {
   TextField,
   DefaultButton,
@@ -82,4 +83,15 @@ const BedSelector = ({
   );
 };
 
+BedSelector.propTypes = {
+  date: PropTypes.shape({
+    members: PropTypes.number.isRequired,
+    nonMembers: PropTypes.number.isRequired,
+    dateKey: PropTypes.string.isRequired
+  }),
+  title: PropTypes.string.isRequired,
+  maxSpaces: PropTypes.number.isRequired,
+  updateBedsOnDate: PropTypes.func.isRequired,
+  updateAll: PropTypes.bool.isRequired
+};
 export default BedSelector;

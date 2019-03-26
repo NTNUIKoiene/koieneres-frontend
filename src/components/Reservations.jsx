@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import AdBlockerExtensionDetector from "@schibstedspain/sui-ad-blocker-extension-detector";
 import { useState, useEffect } from "react";
 import Header from "./Header";
@@ -168,6 +169,12 @@ const Reservations = props => {
       <main className={styles.cardcontainer}>{cards}</main>
     </div>
   );
+};
+
+Reservations.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired
+  }).isRequired
 };
 
 export default Reservations;

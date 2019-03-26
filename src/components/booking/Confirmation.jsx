@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import {
   Label,
   PrimaryButton,
@@ -120,4 +121,19 @@ const Confirmation = ({
   );
 };
 
+Confirmation.propTypes = {
+  selectedDates: PropTypes.array.isRequired,
+  membershipNumber: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  phone: PropTypes.string.isRequired,
+  email: PropTypes.string.isRequired,
+  isBoard: PropTypes.bool.isRequired,
+  shouldPay: PropTypes.bool.isRequired,
+  comment: PropTypes.string.isRequired,
+  totalPrice: PropTypes.number.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  }).isRequired
+};
 export default withRouter(Confirmation);
