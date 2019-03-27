@@ -5,7 +5,7 @@ import { differenceInCalendarDays } from "date-fns";
 function getUpdatedSelectedDates(
   name,
   dateKey,
-  isSelected,
+  deleteDate,
   selectedDates,
   maxNights
 ) {
@@ -14,7 +14,7 @@ function getUpdatedSelectedDates(
     return [{ name, dateKey, members: 0, nonMembers: 0 }];
   }
   let newSelectedDates = [];
-  if (isSelected) {
+  if (deleteDate) {
     newSelectedDates = [...selectedDates].filter(
       sd => sd.name !== name || sd.dateKey !== dateKey
     );
@@ -37,6 +37,11 @@ function getUpdatedSelectedDates(
       return [{ name, dateKey, members: 0, nonMembers: 0 }];
     }
   }
+  // Reset number of selected beds
+  for (let i = 0; i < newSelectedDates.length; i++) {
+    newSelectedDates[i].members = 0;
+    newSelectedDates[i].nonMembers = 0;
+  }
   // Ensure max number of nights is respected by removing first or last of list
 
   if (newSelectedDates.length > maxNights) {
@@ -45,11 +50,6 @@ function getUpdatedSelectedDates(
     } else {
       return newSelectedDates.slice(1);
     }
-  }
-  // Reset number of selected beds
-  for (let i = 0; i < newSelectedDates.length; i++) {
-    newSelectedDates[i].members = 0;
-    newSelectedDates[i].nonMembers = 0;
   }
   return newSelectedDates;
 }
