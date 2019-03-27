@@ -79,7 +79,13 @@ const Closing = props => {
     dispatch({ type: actions.SET_IS_LOADING, payload: false });
   };
 
-  const addClosing = async (selectedCabin, fromDate, toDate, comment) => {
+  const addClosing = async (
+    selectedCabin,
+    fromDate,
+    toDate,
+    comment,
+    callback
+  ) => {
     dispatch({ type: actions.SET_IS_LOADING, payload: true });
     dispatch({ type: actions.SET_SHOW_ERROR, payload: false });
     try {
@@ -90,6 +96,7 @@ const Closing = props => {
         comment: comment
       });
       await fetchCabinsAndExistingClosings();
+      callback();
     } catch (_) {
       dispatch({ type: actions.SET_SHOW_ERROR, payload: true });
     }

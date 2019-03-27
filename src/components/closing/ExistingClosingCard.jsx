@@ -19,7 +19,6 @@ const ExistingClosingCard = ({ closing, deleteClick, isLoading }) => {
         <span className={styles.label}>Kommentar:</span>
         <span className={styles.value}>{closing.comment}</span>
       </div>
-      <hr />
       <DefaultButton
         text="Slett"
         onClick={deleteClick}
@@ -48,7 +47,7 @@ ExistingClosingCard.propTypes = {
 const LoadingCard = () => (
   <div className={styles.card}>
     <h3>
-      <Shimmer width="100%" />
+      <Shimmer width="50%" />
     </h3>
     <section className={styles.info}>
       <div>
@@ -61,7 +60,6 @@ const LoadingCard = () => (
         <Shimmer width="100%" />
       </div>
     </section>
-    <br />
     <DefaultButton
       text="Slett"
       disabled={true}

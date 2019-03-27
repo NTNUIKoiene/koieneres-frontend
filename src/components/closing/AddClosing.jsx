@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer } from "react";
 import PropTypes from "prop-types";
 import nb from "date-fns/locale/nb";
 import { addDays, format } from "date-fns";
@@ -12,40 +12,44 @@ import {
   TextField
 } from "office-ui-fabric-react";
 
+const formActions = {
+  SET_FROM_DATE: "SET_FROM_DATE",
+  SET_TO_DATE: "SET_TO_DATE",
+  SET_SELECTED_CABIN: "SET_SELECTED_CABIN",
+  SET_COMMENT: "SET_COMMENT",
+  CLEAR_FORM: "CLEAR_FORM"
+};
+
+const formReducer = (state, action) => {
+  console.log(action.type);
+  switch (action.type) {
+    case formActions.SET_SELECTED_CABIN:
+      return { ...state, selectedCabin: action.payload };
+    case formActions.SET_FROM_DATE:
+      return { ...state, fromDate: action.payload };
+    case formActions.SET_TO_DATE:
+      return { ...state, toDate: action.payload };
+    case formActions.SET_COMMENT:
+      return { ...state, comment: action.payload };
+    case formActions.CLEAR_FORM:
+      return { ...initalFormState };
+    default:
+      return { ...state };
+  }
+};
+
+const initalFormState = {
+  selectedCabin: {
+    key: 0,
+    text: "Velg koie"
+  },
+  fromDate: new Date(),
+  toDate: addDays(new Date(), 1),
+  comment: ""
+};
+
 const AddClosing = ({ cabins, isLoading, handleAddClosing }) => {
-  const initalState = {
-    selectedCabin: {
-      key: 0,
-      text: "Velg koie"
-    },
-    fromDate: new Date(),
-    toDate: addDays(new Date(), 1),
-    comment: ""
-  };
-
-  const actions = {
-    SET_FROM_DATE: "SET_FROM_DATE",
-    SET_TO_DATE: "SET_TO_DATE",
-    SET_SELECTED_CABIN: "SET_SELECTED_CABIN",
-    SET_COMMENT: "SET_COMMENT"
-  };
-
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case actions.SET_SELECTED_CABIN:
-        return { ...state, selectedCabin: action.payload };
-      case actions.SET_FROM_DATE:
-        return { ...state, fromDate: action.payload };
-      case actions.SET_TO_DATE:
-        return { ...state, toDate: action.payload };
-      case actions.SET_COMMENT:
-        return { ...state, comment: action.payload };
-      default:
-        return { ...state };
-    }
-  };
-
-  const [state, dispatch] = useReducer(reducer, initalState);
+  const [state, dispatch] = useReducer(formReducer, initalFormState);
 
   return (
     <div className={styles.addContainer}>
@@ -56,14 +60,14 @@ const AddClosing = ({ cabins, isLoading, handleAddClosing }) => {
         placeholder="Select or type an option"
         text={state.selectedCabin.text}
         onChange={(_, o) =>
-          dispatch({ type: actions.SET_SELECTED_CABIN, payload: o })
+          dispatch({ type: formActions.SET_SELECTED_CABIN, payload: o })
         }
       />
       <DatePicker
         label="Fra"
         value={state.fromDate}
         onSelectDate={d =>
-          dispatch({ type: actions.SET_FROM_DATE, payload: d })
+          dispatch({ type: formActions.SET_FROM_DATE, payload: d })
         }
         strings={datePickerStrings}
         firstDayOfWeek={DayOfWeek.Monday}
@@ -73,7 +77,9 @@ const AddClosing = ({ cabins, isLoading, handleAddClosing }) => {
       <DatePicker
         label="Til"
         value={state.toDate}
-        onSelectDate={d => dispatch({ type: actions.SET_TO_DATE, payload: d })}
+        onSelectDate={d =>
+          dispatch({ type: formActions.SET_TO_DATE, payload: d })
+        }
         minDate={addDays(state.fromDate, 1)}
         string={datePickerStrings}
         firstDayOfWeek={DayOfWeek.Monday}
@@ -82,7 +88,7 @@ const AddClosing = ({ cabins, isLoading, handleAddClosing }) => {
       <TextField
         value={state.comment}
         onChange={e =>
-          dispatch({ type: actions.SET_COMMENT, payload: e.target.value })
+          dispatch({ type: formActions.SET_COMMENT, payload: e.target.value })
         }
         label="Kommentar"
       />
@@ -93,7 +99,10 @@ const AddClosing = ({ cabins, isLoading, handleAddClosing }) => {
             state.selectedCabin,
             state.fromDate,
             state.toDate,
-            state.comment
+            state.comment,
+            () => {
+              dispatch({ type: formActions.CLEAR_FORM });
+            }
           );
         }}
         iconProps={isLoading ? { iconName: "Hourglass" } : { iconName: "Save" }}
