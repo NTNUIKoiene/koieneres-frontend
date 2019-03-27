@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import Header from "./Header";
 import styles from "./Booking.module.css";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
@@ -27,6 +27,11 @@ import BedSelector from "./booking/BedSelector";
 import Cell from "./booking/Cell";
 import Help from "./booking/Help";
 import Confirmation from "./booking/Confirmation";
+import {
+  ContactInfo,
+  contactInfoReducer,
+  initialContactInfoState
+} from "./booking/ContactInfo";
 import { useUserConfig } from "../hooks";
 import axios from "axios";
 import { BASE_URL } from "../config";
@@ -231,10 +236,10 @@ const Booking = props => {
       CONTACT INFORMATION SECTION
   */
   // TODO: Remove default values
-  const [membershipNumber, setMembershipNumber] = useState("01234");
-  const [name, setName] = useState("Ola Nordmann");
-  const [phone, setPhone] = useState("99887766");
-  const [email, setEmail] = useState("ola.nordmann@example.com");
+  const [contactInfoState, contactInfoDispatch] = useReducer(
+    contactInfoReducer,
+    initialContactInfoState
+  );
 
   /* 
       EXTRA INFORMATION SECTION
@@ -251,10 +256,10 @@ const Booking = props => {
   //   selectedDates.length > 0;
 
   const canSubmitReservation =
-    membershipNumber !== "" &&
-    name !== "" &&
-    phone !== "" &&
-    email !== "" &&
+    contactInfoState.membershipNumber !== "" &&
+    contactInfoState.name !== "" &&
+    contactInfoState.phone !== "" &&
+    contactInfoState.email !== "" &&
     totalPrice > 0 &&
     selectedDates.length > 0;
 
@@ -360,40 +365,10 @@ const Booking = props => {
             />
             <div className={styles.bedSelectorContainer}>{bedSelectors}</div>
           </section>
-          <section className={styles.infoSection}>
-            <h2
-              className={[
-                FontClassNames.xLarge,
-                ColorClassNames.themeDark
-              ].join(" ")}
-            >
-              Kontaktinformasjon
-            </h2>
-            <TextField
-              required
-              label="Medlemsnummer (NTNUI / BIL)"
-              value={membershipNumber}
-              onChange={e => setMembershipNumber(e.target.value)}
-            />
-            <TextField
-              required
-              label="Navn"
-              value={name}
-              onChange={e => setName(e.target.value)}
-            />
-            <TextField
-              required
-              label="Telefon"
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
-            />
-            <TextField
-              required
-              label="Epost"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
-          </section>
+          <ContactInfo
+            state={contactInfoState}
+            dispatch={contactInfoDispatch}
+          />
           {userConfig.isBoard && (
             <section className={styles.styreSection}>
               <h2
@@ -435,10 +410,10 @@ const Booking = props => {
           >
             <Confirmation
               selectedDates={selectedDates}
-              membershipNumber={membershipNumber}
-              name={name}
-              phone={phone}
-              email={email}
+              membershipNumber={contactInfoState.membershipNumber}
+              name={contactInfoState.name}
+              phone={contactInfoState.phone}
+              email={contactInfoState.email}
               isBoard={userConfig.isBoard}
               shouldPay={shouldPay}
               comment={comment}
