@@ -135,19 +135,7 @@ const Booking = props => {
     selectedDatesReducer,
     initialSelectedDates
   );
-  const onCellClick = (name, dateKey, isSelected) => {
-    if (isSelected) {
-      dispatchSelectedDates({
-        type: "DELETE_SELECTED_DATE",
-        value: { name, dateKey }
-      });
-    } else {
-      dispatchSelectedDates({
-        type: "ADD_SELECTED_DATE",
-        value: { name, dateKey }
-      });
-    }
-  };
+
   // Produce columns for data view
   const dataColumns = [
     {
@@ -176,7 +164,7 @@ const Booking = props => {
           item={item}
           day={key}
           selectedDates={selectedDates}
-          onCellClick={onCellClick}
+          dispatchSelectedDates={dispatchSelectedDates}
         />
       )
     });

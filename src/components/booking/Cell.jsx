@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import styles from "../Booking.module.css";
 import { TooltipHost } from "office-ui-fabric-react";
 
-const Cell = ({ item, day, selectedDates, onCellClick }) => {
+const Cell = ({ item, day, selectedDates, dispatchSelectedDates }) => {
   if (!item.data[day]) return null;
   const count = item.data[day].booked;
   const isSelected = selectedDates.filter(
@@ -20,12 +20,27 @@ const Cell = ({ item, day, selectedDates, onCellClick }) => {
     cellStyle = styles.selectedCell;
   }
   let tooltipText = `${item.name}, ${day}`;
-  let clickFunction = () => onCellClick(item.name, day, isSelected);
   if (item.data[day].isClosed) {
     cellStyle = styles.closedCell;
     tooltipText = tooltipText + " (Stengt)";
-    clickFunction = null;
   }
+
+  const clickFunction = () => {
+    if (item.data[day].isClosed) {
+      return;
+    }
+    if (isSelected) {
+      dispatchSelectedDates({
+        type: "DELETE_SELECTED_DATE",
+        value: { name: item.name, dateKey: day }
+      });
+    } else {
+      dispatchSelectedDates({
+        type: "ADD_SELECTED_DATE",
+        value: { name: item.name, dateKey: day }
+      });
+    }
+  };
 
   return (
     <TooltipHost content={tooltipText}>
@@ -44,7 +59,7 @@ Cell.propTypes = {
   }).isRequired,
   day: PropTypes.string.isRequired,
   selectedDates: PropTypes.array.isRequired,
-  onCellClick: PropTypes.func.isRequired
+  dispatchSelectedDates: PropTypes.func.isRequired
 };
 
 export default Cell;

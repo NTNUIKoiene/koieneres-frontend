@@ -7,7 +7,7 @@ import {
   Switch
 } from "react-router-dom";
 import Login from "./components/Login";
-import Booking from "./components/Booking";
+import Booking from "./components/booking/Booking";
 import Reservations from "./components/Reservations";
 import NotFound from "./components/NotFound";
 import Closing from "./components/Closing";
