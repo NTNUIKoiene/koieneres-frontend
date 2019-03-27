@@ -1,11 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useState, useEffect, useReducer } from "react";
-import Header from "./Header";
+import Header from "../Header";
 import styles from "./Booking.module.css";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
-import { datePickerStrings } from "../utils/DatePickerStrings";
-import { getUpdatedSelectedDates } from "../utils/Utils";
+import { datePickerStrings } from "../../utils/DatePickerStrings";
+import { getUpdatedSelectedDates } from "../../utils/Utils";
 import { addDays, format, differenceInCalendarDays } from "date-fns";
 import nb from "date-fns/locale/nb";
 import {
@@ -23,18 +23,48 @@ import {
   Checkbox,
   Modal
 } from "office-ui-fabric-react";
-import BedSelector from "./booking/BedSelector";
-import Cell from "./booking/Cell";
-import Help from "./booking/Help";
-import Confirmation from "./booking/Confirmation";
+import BedSelector from "./BedSelector";
+import Cell from "./Cell";
+import Help from "./Help";
+import Confirmation from "./Confirmation";
 import {
   ContactInfo,
   contactInfoReducer,
   initialContactInfoState
-} from "./booking/ContactInfo";
-import { useUserConfig } from "../hooks";
+} from "./ContactInfo";
+import { useUserConfig } from "../../hooks";
 import axios from "axios";
-import { BASE_URL } from "../config";
+import { BASE_URL } from "../../config";
+
+const initialSelectedDates = [];
+
+const selectedDatesReducer = (state, action) => {
+  const { name, dateKey, all, number } = action.value;
+  switch (action.type) {
+    case "ADD_SELECTED_DATE":
+      return getUpdatedSelectedDates(name, dateKey, false, state, 3);
+    case "DELETE_SELECTED_DATE":
+      return getUpdatedSelectedDates(name, dateKey, true, state, 3);
+    case "SET_MEMBER_NUMBER":
+      return state.map(sd => {
+        if (all || sd.dateKey === dateKey) {
+          return { ...sd, members: number };
+        } else {
+          return sd;
+        }
+      });
+    case "SET_NON_MEMBER_NUMBER":
+      return state.map(sd => {
+        if (all || sd.dateKey === dateKey) {
+          return { ...sd, nonMembers: number };
+        } else {
+          return sd;
+        }
+      });
+    default:
+      return state;
+  }
+};
 
 const Booking = props => {
   const cancelToken = axios.CancelToken;
@@ -101,19 +131,11 @@ const Booking = props => {
     };
   }, [fromDate, toDate]);
 
-  const [selectedDates, setSelectedDates] = useState([]);
+  const [selectedDates, dispatchSelectedDates] = useReducer(
+    selectedDatesReducer,
+    initialSelectedDates
+  );
 
-  const onCellClick = (name, dateKey, isSelected) => {
-    setSelectedDates(
-      getUpdatedSelectedDates(
-        name,
-        dateKey,
-        isSelected,
-        selectedDates,
-        userConfig.maxNights
-      )
-    );
-  };
   // Produce columns for data view
   const dataColumns = [
     {
@@ -142,7 +164,7 @@ const Booking = props => {
           item={item}
           day={key}
           selectedDates={selectedDates}
-          onCellClick={onCellClick}
+          dispatchSelectedDates={dispatchSelectedDates}
         />
       )
     });
@@ -176,32 +198,26 @@ const Booking = props => {
     )
     .includes(true);
 
-  const updateBedsOnDate = (dateKey, value, isMember, all = false) => {
-    let valueToSet = value;
-    if (isNaN(valueToSet)) {
-      valueToSet = 0;
-    }
-
-    const newSelectedDates = [];
-    selectedDates.forEach(date => {
-      if (date.dateKey === dateKey || all) {
-        //Update
-        if (isMember) {
-          newSelectedDates.push({
-            ...date,
-            members: valueToSet
-          });
-        } else {
-          newSelectedDates.push({
-            ...date,
-            nonMembers: valueToSet
-          });
+  const updateBedsOnDate = (dateKey, number, isMember, all = false) => {
+    if (isMember) {
+      dispatchSelectedDates({
+        type: "SET_MEMBER_NUMBER",
+        value: {
+          dateKey,
+          all,
+          number: isNaN(number) ? 0 : number
         }
-      } else {
-        newSelectedDates.push(date);
-      }
-    });
-    setSelectedDates(newSelectedDates);
+      });
+    } else {
+      dispatchSelectedDates({
+        type: "SET_NON_MEMBER_NUMBER",
+        value: {
+          dateKey,
+          all,
+          number: isNaN(number) ? 0 : number
+        }
+      });
+    }
   };
 
   const bedSelectors = sameForAllDates ? (
@@ -227,6 +243,7 @@ const Booking = props => {
           key={k}
           updateBedsOnDate={updateBedsOnDate}
           maxSpaces={maxSpaces}
+          updateAll={false}
         />
       );
     })
@@ -235,7 +252,7 @@ const Booking = props => {
   /*
       CONTACT INFORMATION SECTION
   */
-  // TODO: Remove default values
+  // TODO: Remove default numbers
   const [contactInfoState, contactInfoDispatch] = useReducer(
     contactInfoReducer,
     initialContactInfoState
