@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { format } from "date-fns";
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
+import { useAbortableRequest } from "../../hooks";
 import Header from "../Header";
 import AddClosing from "./AddClosing";
 import { ExistingClosingCard, LoadingCard } from "./ExistingClosingCard";
@@ -13,13 +14,15 @@ import { BASE_URL } from "../../config";
 const initalState = {
   isLoading: true,
   showError: false,
+  fetchExistingClosings: true,
   existingClosings: []
 };
 
 const actions = {
   SET_IS_LOADING: "SET_IS_LOADING",
   SET_SHOW_ERROR: "SET_SHOW_ERROR",
-  SET_EXISTING_CLOSINGS: "SET_EXISTING_CLOSINGS"
+  SET_EXISTING_CLOSINGS: "SET_EXISTING_CLOSINGS",
+  FETCH_EXISTING_CLOSINGS: "FETCH_EXISTING_CLOSINGS"
 };
 
 const reducer = (state, action) => {
@@ -30,6 +33,8 @@ const reducer = (state, action) => {
       return { ...state, showError: action.payload };
     case actions.SET_EXISTING_CLOSINGS:
       return { ...state, existingClosings: action.payload };
+    case actions.FETCH_EXISTING_CLOSINGS:
+      return { ...state, fetchExistingClosings: !state.fetchExistingClosings };
     default:
       return { ...state };
   }
@@ -38,35 +43,32 @@ const reducer = (state, action) => {
 const Closing = props => {
   const [state, dispatch] = useReducer(reducer, initalState);
 
-  useEffect(() => {
-    fetchExistingClosings();
-  }, []);
-
-  const fetchExistingClosings = async () => {
-    dispatch({ type: actions.SET_IS_LOADING, payload: true });
-    try {
-      const existingClosingsData = (await axios.get(
-        `${BASE_URL}/api/cabin-closings/`
-      )).data;
+  useAbortableRequest(
+    "GET",
+    `${BASE_URL}/api/cabin-closings/`,
+    response => {
       dispatch({
         type: actions.SET_EXISTING_CLOSINGS,
-        payload: existingClosingsData.results
+        payload: response.data.results
       });
-    } catch (_) {
+      dispatch({ type: actions.SET_IS_LOADING, payload: false });
+    },
+    () => {
       dispatch({ type: actions.SET_SHOW_ERROR, payload: true });
-    }
-    dispatch({ type: actions.SET_IS_LOADING, payload: false });
-  };
+      dispatch({ type: actions.SET_IS_LOADING, payload: false });
+    },
+    [state.fetchExistingClosings]
+  );
 
   const deleteClosing = async id => {
     dispatch({ type: actions.SET_IS_LOADING, payload: true });
     try {
       await axios.delete(`${BASE_URL}/api/cabin-closings/${id}/`);
-      await fetchExistingClosings();
     } catch (_) {
       dispatch({ type: actions.SET_SHOW_ERROR, payload: true });
+    } finally {
+      dispatch({ type: actions.FETCH_EXISTING_CLOSINGS });
     }
-    dispatch({ type: actions.SET_IS_LOADING, payload: false });
   };
 
   const addClosing = async (
@@ -85,12 +87,12 @@ const Closing = props => {
         toDate: format(toDate, "YYYY-MM-DD"),
         comment: comment
       });
-      await fetchExistingClosings();
       callback();
     } catch (_) {
       dispatch({ type: actions.SET_SHOW_ERROR, payload: true });
+    } finally {
+      dispatch({ type: actions.FETCH_EXISTING_CLOSINGS });
     }
-    dispatch({ type: actions.SET_IS_LOADING, payload: false });
   };
 
   const loadingIndicators = Array(

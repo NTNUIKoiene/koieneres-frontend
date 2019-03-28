@@ -43,6 +43,7 @@ const formReducer = (state, action) => {
 };
 
 const initalFormState = {
+  cabins: [],
   selectedCabin: {
     key: 0,
     text: "Velg koie"
@@ -53,27 +54,29 @@ const initalFormState = {
 };
 
 const AddClosing = ({ isLoading, handleAddClosing, handleError }) => {
+  const [state, dispatch] = useReducer(formReducer, initalFormState);
+
   const handleSuccess = response => {
-    return response.data.results.map(cabin => {
+    const cabins = response.data.results.map(cabin => {
       return { key: cabin.id, text: cabin.name };
     });
+    dispatch({ type: formActions.SET_CABINS, payload: cabins });
   };
 
-  const cabins = useAbortableRequest(
-    [],
-    "get",
+  useAbortableRequest(
+    "GET",
     `${BASE_URL}/api/cabin/`,
     handleSuccess,
-    handleError
+    handleError,
+    []
   );
-  const [state, dispatch] = useReducer(formReducer, initalFormState);
 
   return (
     <div className={styles.addContainer}>
       <h2>Steng en koie:</h2>
       <ComboBox
         autoComplete="on"
-        options={cabins}
+        options={state.cabins}
         placeholder="Select or type an option"
         text={state.selectedCabin.text}
         onChange={(_, o) =>
