@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import axios from "axios";
+import { BASE_URL } from "../config";
 
 export default function useAbortableRequest(
   method,
@@ -16,7 +17,7 @@ export default function useAbortableRequest(
       try {
         const response = await axios({
           method: method.toLowerCase(),
-          url,
+          url: BASE_URL + url,
           data: {
             cancelToken: source.token
           }
