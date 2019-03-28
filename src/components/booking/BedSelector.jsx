@@ -89,7 +89,7 @@ BedSelector.propTypes = {
     nonMembers: PropTypes.number.isRequired,
     dateKey: PropTypes.string.isRequired
   }),
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   maxSpaces: PropTypes.number.isRequired,
   updateBedsOnDate: PropTypes.func.isRequired,
   updateAll: PropTypes.bool.isRequired

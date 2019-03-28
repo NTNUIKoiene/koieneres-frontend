@@ -1,12 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { useState } from "react";
-import { useAbortableRequest } from "../hooks";
-import Header from "./Header";
+import { useState, useReducer } from "react";
+import Header from "../Header";
 import styles from "./Booking.module.css";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
-import { datePickerStrings } from "../utils/DatePickerStrings";
-import { getUpdatedSelectedDates } from "../utils/Utils";
+import { datePickerStrings } from "../../utils/DatePickerStrings";
+import { getUpdatedSelectedDates } from "../../utils/Utils";
 import { addDays, format, differenceInCalendarDays } from "date-fns";
 import nb from "date-fns/locale/nb";
 import {
@@ -24,21 +23,58 @@ import {
   Checkbox,
   Modal
 } from "office-ui-fabric-react";
-import BedSelector from "./booking/BedSelector";
-import Cell from "./booking/Cell";
-import Help from "./booking/Help";
-import Confirmation from "./booking/Confirmation";
-import { useUserConfig } from "../hooks";
+import BedSelector from "./BedSelector";
+import Cell from "./Cell";
+import Help from "./Help";
+import Confirmation from "./Confirmation";
+import {
+  ContactInfo,
+  contactInfoReducer,
+  initialContactInfoState
+} from "./ContactInfo";
+import { useUserConfig, useAbortableRequest } from "../../hooks";
+
+const initialSelectedDates = [];
+
+const selectedDatesReducer = (state, action) => {
+  const { name, dateKey, all, number } = action.value;
+  switch (action.type) {
+    case "ADD_SELECTED_DATE":
+      return getUpdatedSelectedDates(name, dateKey, false, state, 3);
+    case "DELETE_SELECTED_DATE":
+      return getUpdatedSelectedDates(name, dateKey, true, state, 3);
+    case "SET_MEMBER_NUMBER":
+      return state.map(sd => {
+        if (all || sd.dateKey === dateKey) {
+          return { ...sd, members: number };
+        } else {
+          return sd;
+        }
+      });
+    case "SET_NON_MEMBER_NUMBER":
+      return state.map(sd => {
+        if (all || sd.dateKey === dateKey) {
+          return { ...sd, nonMembers: number };
+        } else {
+          return sd;
+        }
+      });
+    default:
+      return state;
+  }
+};
 
 const Booking = props => {
+  // General state
   const [errorText, setErrorText] = useState("");
+
   const userConfig = useUserConfig();
+
+  // MATRIX SECTION
 
   const [reservationData, setReservationData] = useState([]);
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(addDays(new Date(), 0));
-  const [selectedDates, setSelectedDates] = useState([]);
-
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
 
   useAbortableRequest(
@@ -67,17 +103,11 @@ const Booking = props => {
     [fromDate, toDate]
   );
 
-  const onCellClick = (name, dateKey, isSelected) => {
-    setSelectedDates(
-      getUpdatedSelectedDates(
-        name,
-        dateKey,
-        isSelected,
-        selectedDates,
-        userConfig.maxNights
-      )
-    );
-  };
+  const [selectedDates, dispatchSelectedDates] = useReducer(
+    selectedDatesReducer,
+    initialSelectedDates
+  );
+
   // Produce columns for data view
   const dataColumns = [
     {
@@ -106,7 +136,7 @@ const Booking = props => {
           item={item}
           day={key}
           selectedDates={selectedDates}
-          onCellClick={onCellClick}
+          dispatchSelectedDates={dispatchSelectedDates}
         />
       )
     });
@@ -140,32 +170,26 @@ const Booking = props => {
     )
     .includes(true);
 
-  const updateBedsOnDate = (dateKey, value, isMember, all = false) => {
-    let valueToSet = value;
-    if (isNaN(valueToSet)) {
-      valueToSet = 0;
-    }
-
-    const newSelectedDates = [];
-    selectedDates.forEach(date => {
-      if (date.dateKey === dateKey || all) {
-        //Update
-        if (isMember) {
-          newSelectedDates.push({
-            ...date,
-            members: valueToSet
-          });
-        } else {
-          newSelectedDates.push({
-            ...date,
-            nonMembers: valueToSet
-          });
+  const updateBedsOnDate = (dateKey, number, isMember, all = false) => {
+    if (isMember) {
+      dispatchSelectedDates({
+        type: "SET_MEMBER_NUMBER",
+        value: {
+          dateKey,
+          all,
+          number: isNaN(number) ? 0 : number
         }
-      } else {
-        newSelectedDates.push(date);
-      }
-    });
-    setSelectedDates(newSelectedDates);
+      });
+    } else {
+      dispatchSelectedDates({
+        type: "SET_NON_MEMBER_NUMBER",
+        value: {
+          dateKey,
+          all,
+          number: isNaN(number) ? 0 : number
+        }
+      });
+    }
   };
 
   const bedSelectors = sameForAllDates ? (
@@ -191,6 +215,7 @@ const Booking = props => {
           key={k}
           updateBedsOnDate={updateBedsOnDate}
           maxSpaces={maxSpaces}
+          updateAll={false}
         />
       );
     })
@@ -199,11 +224,11 @@ const Booking = props => {
   /*
       CONTACT INFORMATION SECTION
   */
-  // TODO: Remove default values
-  const [membershipNumber, setMembershipNumber] = useState("01234");
-  const [name, setName] = useState("Ola Nordmann");
-  const [phone, setPhone] = useState("99887766");
-  const [email, setEmail] = useState("ola.nordmann@example.com");
+  // TODO: Remove default numbers
+  const [contactInfoState, contactInfoDispatch] = useReducer(
+    contactInfoReducer,
+    initialContactInfoState
+  );
 
   /* 
       EXTRA INFORMATION SECTION
@@ -220,10 +245,10 @@ const Booking = props => {
   //   selectedDates.length > 0;
 
   const canSubmitReservation =
-    membershipNumber !== "" &&
-    name !== "" &&
-    phone !== "" &&
-    email !== "" &&
+    contactInfoState.membershipNumber !== "" &&
+    contactInfoState.name !== "" &&
+    contactInfoState.phone !== "" &&
+    contactInfoState.email !== "" &&
     totalPrice > 0 &&
     selectedDates.length > 0;
 
@@ -329,40 +354,10 @@ const Booking = props => {
             />
             <div className={styles.bedSelectorContainer}>{bedSelectors}</div>
           </section>
-          <section className={styles.infoSection}>
-            <h2
-              className={[
-                FontClassNames.xLarge,
-                ColorClassNames.themeDark
-              ].join(" ")}
-            >
-              Kontaktinformasjon
-            </h2>
-            <TextField
-              required
-              label="Medlemsnummer (NTNUI / BIL)"
-              value={membershipNumber}
-              onChange={e => setMembershipNumber(e.target.value)}
-            />
-            <TextField
-              required
-              label="Navn"
-              value={name}
-              onChange={e => setName(e.target.value)}
-            />
-            <TextField
-              required
-              label="Telefon"
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
-            />
-            <TextField
-              required
-              label="Epost"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
-          </section>
+          <ContactInfo
+            state={contactInfoState}
+            dispatch={contactInfoDispatch}
+          />
           {userConfig.isBoard && (
             <section className={styles.styreSection}>
               <h2
@@ -404,10 +399,10 @@ const Booking = props => {
           >
             <Confirmation
               selectedDates={selectedDates}
-              membershipNumber={membershipNumber}
-              name={name}
-              phone={phone}
-              email={email}
+              membershipNumber={contactInfoState.membershipNumber}
+              name={contactInfoState.name}
+              phone={contactInfoState.phone}
+              email={contactInfoState.email}
               isBoard={userConfig.isBoard}
               shouldPay={shouldPay}
               comment={comment}
