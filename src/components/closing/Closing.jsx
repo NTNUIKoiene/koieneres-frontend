@@ -13,16 +13,13 @@ import { BASE_URL } from "../../config";
 const initalState = {
   isLoading: true,
   showError: false,
-  cabins: [],
   existingClosings: []
 };
 
 const actions = {
   SET_IS_LOADING: "SET_IS_LOADING",
   SET_SHOW_ERROR: "SET_SHOW_ERROR",
-  SET_CABINS: "SET_CABINS",
-  SET_EXISTING_CLOSINGS: "SET_EXISTING_CLOSINGS",
-  SET_RESET_FORM: "SET_RESET_FORM"
+  SET_EXISTING_CLOSINGS: "SET_EXISTING_CLOSINGS"
 };
 
 const reducer = (state, action) => {
@@ -31,8 +28,6 @@ const reducer = (state, action) => {
       return { ...state, isLoading: action.payload };
     case actions.SET_SHOW_ERROR:
       return { ...state, showError: action.payload };
-    case actions.SET_CABINS:
-      return { ...state, cabins: action.payload };
     case actions.SET_EXISTING_CLOSINGS:
       return { ...state, existingClosings: action.payload };
     default:
@@ -44,17 +39,12 @@ const Closing = props => {
   const [state, dispatch] = useReducer(reducer, initalState);
 
   useEffect(() => {
-    fetchCabinsAndExistingClosings();
+    fetchExistingClosings();
   }, []);
 
-  const fetchCabinsAndExistingClosings = async () => {
+  const fetchExistingClosings = async () => {
     dispatch({ type: actions.SET_IS_LOADING, payload: true });
     try {
-      const cabinData = (await axios.get(`${BASE_URL}/api/cabin/`)).data;
-      const cabins = cabinData.results.map(c => {
-        return { key: c.id, text: c.name };
-      });
-      dispatch({ type: actions.SET_CABINS, payload: cabins });
       const existingClosingsData = (await axios.get(
         `${BASE_URL}/api/cabin-closings/`
       )).data;
@@ -72,7 +62,7 @@ const Closing = props => {
     dispatch({ type: actions.SET_IS_LOADING, payload: true });
     try {
       await axios.delete(`${BASE_URL}/api/cabin-closings/${id}/`);
-      await fetchCabinsAndExistingClosings();
+      await fetchExistingClosings();
     } catch (_) {
       dispatch({ type: actions.SET_SHOW_ERROR, payload: true });
     }
@@ -95,7 +85,7 @@ const Closing = props => {
         toDate: format(toDate, "YYYY-MM-DD"),
         comment: comment
       });
-      await fetchCabinsAndExistingClosings();
+      await fetchExistingClosings();
       callback();
     } catch (_) {
       dispatch({ type: actions.SET_SHOW_ERROR, payload: true });
@@ -135,9 +125,11 @@ const Closing = props => {
           </MessageBar>
         )}
         <AddClosing
-          cabins={state.cabins}
           handleAddClosing={addClosing}
           isLoading={state.isLoading}
+          handleError={() =>
+            dispatch({ type: actions.SET_SHOW_ERROR, payload: true })
+          }
         />
         <div className={styles.dataContainer}>
           <h2>Eksisterende Stenginger:</h2>

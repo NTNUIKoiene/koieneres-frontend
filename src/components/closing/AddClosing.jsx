@@ -4,6 +4,8 @@ import nb from "date-fns/locale/nb";
 import { addDays, format } from "date-fns";
 import { datePickerStrings } from "../../utils/DatePickerStrings";
 import styles from "./Closing.module.css";
+import { BASE_URL } from "../../config";
+import { useAbortableRequest } from "../../hooks";
 import {
   ComboBox,
   DatePicker,
@@ -13,6 +15,7 @@ import {
 } from "office-ui-fabric-react";
 
 const formActions = {
+  SET_CABINS: "SET_CABINS",
   SET_FROM_DATE: "SET_FROM_DATE",
   SET_TO_DATE: "SET_TO_DATE",
   SET_SELECTED_CABIN: "SET_SELECTED_CABIN",
@@ -21,8 +24,9 @@ const formActions = {
 };
 
 const formReducer = (state, action) => {
-  console.log(action.type);
   switch (action.type) {
+    case formActions.SET_CABINS:
+      return { ...state, cabins: action.payload };
     case formActions.SET_SELECTED_CABIN:
       return { ...state, selectedCabin: action.payload };
     case formActions.SET_FROM_DATE:
@@ -48,7 +52,20 @@ const initalFormState = {
   comment: ""
 };
 
-const AddClosing = ({ cabins, isLoading, handleAddClosing }) => {
+const AddClosing = ({ isLoading, handleAddClosing, handleError }) => {
+  const handleSuccess = response => {
+    return response.data.results.map(cabin => {
+      return { key: cabin.id, text: cabin.name };
+    });
+  };
+
+  const cabins = useAbortableRequest(
+    [],
+    "get",
+    `${BASE_URL}/api/cabin/`,
+    handleSuccess,
+    handleError
+  );
   const [state, dispatch] = useReducer(formReducer, initalFormState);
 
   return (
@@ -115,9 +132,9 @@ const AddClosing = ({ cabins, isLoading, handleAddClosing }) => {
 };
 
 AddClosing.propTypes = {
-  cabins: PropTypes.array.isRequired,
   isLoading: PropTypes.bool.isRequired,
-  handleAddClosing: PropTypes.func.isRequired
+  handleAddClosing: PropTypes.func.isRequired,
+  handleError: PropTypes.func.isRequired
 };
 
 export default AddClosing;
