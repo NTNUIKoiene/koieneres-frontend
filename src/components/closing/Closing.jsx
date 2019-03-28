@@ -45,7 +45,7 @@ const Closing = props => {
 
   useAbortableRequest(
     "GET",
-    `${BASE_URL}/api/cabin-closings/`,
+    "/api/cabin-closings/",
     response => {
       dispatch({
         type: actions.SET_EXISTING_CLOSINGS,
@@ -64,10 +64,9 @@ const Closing = props => {
     dispatch({ type: actions.SET_IS_LOADING, payload: true });
     try {
       await axios.delete(`${BASE_URL}/api/cabin-closings/${id}/`);
+      dispatch({ type: actions.FETCH_EXISTING_CLOSINGS });
     } catch (_) {
       dispatch({ type: actions.SET_SHOW_ERROR, payload: true });
-    } finally {
-      dispatch({ type: actions.FETCH_EXISTING_CLOSINGS });
     }
   };
 
@@ -88,10 +87,9 @@ const Closing = props => {
         comment: comment
       });
       callback();
+      dispatch({ type: actions.FETCH_EXISTING_CLOSINGS });
     } catch (_) {
       dispatch({ type: actions.SET_SHOW_ERROR, payload: true });
-    } finally {
-      dispatch({ type: actions.FETCH_EXISTING_CLOSINGS });
     }
   };
 
@@ -134,7 +132,7 @@ const Closing = props => {
           }
         />
         <div className={styles.dataContainer}>
-          <h2>Eksisterende Stenginger:</h2>
+          <h2>Eksisterende stenginger:</h2>
           {state.isLoading ? loadingIndicators : existingClosingCards}
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Header from "./Header";
 import {
@@ -16,6 +16,7 @@ import { datePickerStrings } from "../utils/DatePickerStrings";
 import styles from "./ExtendedPeriods.module.css";
 import axios from "axios";
 import { BASE_URL } from "../config";
+import { useAbortableRequest } from "../hooks";
 import Card from "./common/Card";
 import LoadingCard from "./common/LoadingCard";
 
@@ -36,29 +37,29 @@ const restrictedListThursday = computeRestrictedDates(isThursday);
 const ExtendedPeriod = props => {
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchExtensions, setFetchExtensions] = useState(true);
 
   const [description, setDescription] = useState("");
   const [reservationDate, setReservationDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [extensions, setExtensions] = useState([]);
 
-  const fetchExtensions = async () => {
-    setIsLoading(true);
-    try {
-      const data = (await axios.get(`${BASE_URL}/api/extended-periods`)).data
-        .results;
-      setExtensions(data);
-    } catch (_) {
+  useAbortableRequest(
+    "GET",
+    "/api/extended-periods",
+    response => {
+      setExtensions(response.data.results);
+      setIsLoading(false);
+    },
+    () => {
       setShowError(true);
-    }
-    setIsLoading(false);
-  };
-
-  useEffect(() => {
-    fetchExtensions();
-  }, []);
+      setIsLoading(false);
+    },
+    [fetchExtensions]
+  );
 
   const addExtension = async () => {
+    // BUG: No error showing when post requests returns 400
     setShowError(false);
     setIsLoading(true);
     try {
@@ -68,11 +69,13 @@ const ExtendedPeriod = props => {
         description
       };
       await axios.post(`${BASE_URL}/api/extended-periods/`, payload);
-      fetchExtensions();
+      setDescription("");
+      setReservationDate(null);
+      setEndDate(null);
+      setFetchExtensions(e => !e);
     } catch (_) {
       setShowError(true);
     }
-    setIsLoading(false);
   };
 
   const deleteExtension = async id => {
@@ -80,11 +83,10 @@ const ExtendedPeriod = props => {
     setIsLoading(true);
     try {
       await axios.delete(`${BASE_URL}/api/extended-periods/${id}/`);
-      await fetchExtensions();
+      setFetchExtensions(e => !e);
     } catch (_) {
       setShowError(true);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -145,29 +147,32 @@ const ExtendedPeriod = props => {
         </div>
         <div className={styles.dataContainer}>
           <h2>Eksisterende utvidelser:</h2>
-          {isLoading &&
-            extensions.length === 0 &&
-            Array(3)
-              .fill()
-              .map((_, k) => (
-                <LoadingCard key={k} template="s.ss" buttonLabels={["Slett"]} />
+          {isLoading
+            ? Array(extensions.length === 0 ? 3 : extensions.length)
+                .fill()
+                .map((_, k) => (
+                  <LoadingCard
+                    key={k}
+                    template="s.ss"
+                    buttonLabels={["Slett"]}
+                  />
+                ))
+            : extensions.map((e, k) => (
+                <Card key={k}>
+                  <h3>{e.description}</h3>
+                  <p>
+                    Reservasjonsdato: {e.reservationDate}
+                    <br />
+                    Sluttdato: {e.endDate}
+                  </p>
+                  <DefaultButton
+                    text="Slett"
+                    iconProps={{ iconName: isLoading ? "Hourglass" : "Delete" }}
+                    disabled={isLoading}
+                    onClick={() => deleteExtension(e.id)}
+                  />
+                </Card>
               ))}
-          {extensions.map((e, k) => (
-            <Card key={k}>
-              <h3>{e.description}</h3>
-              <p>
-                Reservasjonsdato: {e.reservationDate}
-                <br />
-                Sluttdato: {e.endDate}
-              </p>
-              <DefaultButton
-                text="Slett"
-                iconProps={{ iconName: isLoading ? "Hourglass" : "Delete" }}
-                disabled={isLoading}
-                onClick={() => deleteExtension(e.id)}
-              />
-            </Card>
-          ))}
         </div>
       </div>
     </div>

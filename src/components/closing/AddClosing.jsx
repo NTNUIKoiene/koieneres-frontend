@@ -4,7 +4,6 @@ import nb from "date-fns/locale/nb";
 import { addDays, format } from "date-fns";
 import { datePickerStrings } from "../../utils/DatePickerStrings";
 import styles from "./Closing.module.css";
-import { BASE_URL } from "../../config";
 import { useAbortableRequest } from "../../hooks";
 import {
   ComboBox,
@@ -56,17 +55,15 @@ const initalFormState = {
 const AddClosing = ({ isLoading, handleAddClosing, handleError }) => {
   const [state, dispatch] = useReducer(formReducer, initalFormState);
 
-  const handleSuccess = response => {
-    const cabins = response.data.results.map(cabin => {
-      return { key: cabin.id, text: cabin.name };
-    });
-    dispatch({ type: formActions.SET_CABINS, payload: cabins });
-  };
-
   useAbortableRequest(
     "GET",
-    `${BASE_URL}/api/cabin/`,
-    handleSuccess,
+    "/api/cabin/",
+    response => {
+      const cabins = response.data.results.map(cabin => {
+        return { key: cabin.id, text: cabin.name };
+      });
+      dispatch({ type: formActions.SET_CABINS, payload: cabins });
+    },
     handleError,
     []
   );

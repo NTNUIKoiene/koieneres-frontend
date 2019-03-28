@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useAbortableRequest } from "../hooks";
 import Header from "./Header";
 import styles from "./Booking.module.css";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
@@ -28,75 +29,43 @@ import Cell from "./booking/Cell";
 import Help from "./booking/Help";
 import Confirmation from "./booking/Confirmation";
 import { useUserConfig } from "../hooks";
-import axios from "axios";
-import { BASE_URL } from "../config";
 
 const Booking = props => {
-  const cancelToken = axios.CancelToken;
-
-  // General state
   const [errorText, setErrorText] = useState("");
-
   const userConfig = useUserConfig();
-
-  // MATRIX SECTION
 
   const [reservationData, setReservationData] = useState([]);
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(addDays(new Date(), 0));
+  const [selectedDates, setSelectedDates] = useState([]);
+
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
 
-  useEffect(() => {
-    let didCancel = false;
-    const source = cancelToken.source();
+  useAbortableRequest(
+    "GET",
+    `/api/reservation-period/`,
+    response => {
+      setToDate(new Date(response.data.to));
+    },
+    () => {
+      setErrorText("Klare ikke å hente reservasjonsperioden!");
+    }
+  );
 
-    const fetchReservationPeriod = async () => {
-      try {
-        const periodData = (await axios.get(
-          `${BASE_URL}/api/reservation-period/`,
-          { cancelToken: source.token }
-        )).data;
-        setToDate(new Date(periodData.to));
-      } catch (_) {
-        if (!didCancel) {
-          setErrorText("Klare ikke å hente reservasjonsperioden!");
-        }
-      }
-    };
-    fetchReservationPeriod();
-    return () => {
-      didCancel = true;
-      source.cancel();
-    };
-  }, []);
-
-  useEffect(() => {
-    const source = cancelToken.source();
-    let didCancel = false;
-    const fetchReservationData = async () => {
-      try {
-        const status = (await axios.get(`${BASE_URL}/api/status/`, {
-          cancelToken: source.token,
-          params: {
-            from: format(fromDate, "YYYY-MM-DD"),
-            to: format(toDate, "YYYY-MM-DD")
-          }
-        })).data;
-        setReservationData(status);
-      } catch (_) {
-        if (!didCancel) {
-          setErrorText("Klarte ikke å hente reservasjonsstatus!");
-        }
-      }
-    };
-    fetchReservationData();
-    return () => {
-      source.cancel();
-      didCancel = true;
-    };
-  }, [fromDate, toDate]);
-
-  const [selectedDates, setSelectedDates] = useState([]);
+  useAbortableRequest(
+    "GET",
+    `/api/status/?from=${format(fromDate, "YYYY-MM-DD")}&to=${format(
+      toDate,
+      "YYYY-MM-DD"
+    )}`,
+    response => {
+      setReservationData(response.data);
+    },
+    () => {
+      setErrorText("Klarte ikke å hente reservasjonsstatus!");
+    },
+    [fromDate, toDate]
+  );
 
   const onCellClick = (name, dateKey, isSelected) => {
     setSelectedDates(
