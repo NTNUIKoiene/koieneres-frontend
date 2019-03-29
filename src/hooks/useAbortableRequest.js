@@ -9,9 +9,10 @@ export default function useAbortableRequest(
   method = "get"
 ) {
   const [effectCount, setEffectCount] = useState(0);
-  const isMounted = useRef(true);
+  const isMounted = useRef(false);
 
   useEffect(() => {
+    isMounted.current = true;
     const source = axios.CancelToken.source();
     let didCancel = false;
 
