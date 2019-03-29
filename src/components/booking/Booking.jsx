@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { useState, useReducer } from "react";
+import { useState, useReducer, useEffect } from "react";
 import Header from "../Header";
 import styles from "./Booking.module.css";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
@@ -67,18 +67,15 @@ const selectedDatesReducer = (state, action) => {
 const Booking = props => {
   // General state
   const [errorText, setErrorText] = useState("");
-
   const userConfig = useUserConfig();
 
   // MATRIX SECTION
-
   const [reservationData, setReservationData] = useState([]);
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(addDays(new Date(), 0));
   const deltaDays = differenceInCalendarDays(toDate, fromDate);
 
   useAbortableRequest(
-    "GET",
     `/api/reservation-period/`,
     response => {
       setToDate(new Date(response.data.to));
@@ -88,8 +85,7 @@ const Booking = props => {
     }
   );
 
-  useAbortableRequest(
-    "GET",
+  const refetchReservationsStatus = useAbortableRequest(
     `/api/status/?from=${format(fromDate, "YYYY-MM-DD")}&to=${format(
       toDate,
       "YYYY-MM-DD"
@@ -99,9 +95,12 @@ const Booking = props => {
     },
     () => {
       setErrorText("Klarte ikke å hente reservasjonsstatus!");
-    },
-    [fromDate, toDate]
+    }
   );
+
+  useEffect(() => {
+    refetchReservationsStatus();
+  }, [fromDate, toDate]);
 
   const [selectedDates, dispatchSelectedDates] = useReducer(
     selectedDatesReducer,
