@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import styles from "./Closing.module.css";
 import { DefaultButton, Shimmer } from "office-ui-fabric-react";
 
-const ExistingClosingCard = ({ closing, deleteClick, isLoading }) => {
+const ClosedCabinCard = ({ closing, deleteClick, isLoading }) => {
   return (
     <div className={styles.card}>
       <h3>{closing.cabin.name}</h3>
@@ -31,7 +31,7 @@ const ExistingClosingCard = ({ closing, deleteClick, isLoading }) => {
   );
 };
 
-ExistingClosingCard.propTypes = {
+ClosedCabinCard.propTypes = {
   deleteClick: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
   closing: PropTypes.shape({
@@ -68,4 +68,4 @@ const LoadingCard = () => (
   </div>
 );
 
-export { ExistingClosingCard, LoadingCard };
+export { ClosedCabinCard, LoadingCard };
