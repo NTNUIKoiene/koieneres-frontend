@@ -6,34 +6,34 @@ const LoadingCard = () => {
   return (
     <div className={styles.card}>
       <h3>
-        <Shimmer width="100%" />
+        <Shimmer width="95%" />
       </h3>
       <section className={styles.info}>
         <div>
-          <Shimmer width="100%" height="25" />
+          <Shimmer width="95%" height="25" />
         </div>
         <br />
         <div>
-          <Shimmer width="100%" />
+          <Shimmer width="90%" />
         </div>
         <div>
-          <Shimmer width="100%" />
+          <Shimmer width="90%" />
         </div>
         <div>
-          <Shimmer width="100%" />
+          <Shimmer width="90%" />
         </div>
         <div>
-          <Shimmer width="100%" />
+          <Shimmer width="90%" />
         </div>
         <br />
         <div>
-          <Shimmer width="100%" />
+          <Shimmer width="80%" />
         </div>
         <div>
-          <Shimmer width="100%" />
+          <Shimmer width="80%" />
         </div>
         <div>
-          <Shimmer width="100%" />
+          <Shimmer width="80%" />
         </div>
         <br />
         <div>
