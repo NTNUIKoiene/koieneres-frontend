@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import nb from "date-fns/locale/nb";
 import { addDays, format } from "date-fns";
@@ -13,47 +13,19 @@ import {
   TextField
 } from "office-ui-fabric-react";
 
-const formActions = {
-  SET_CABINS: "SET_CABINS",
-  SET_FROM_DATE: "SET_FROM_DATE",
-  SET_TO_DATE: "SET_TO_DATE",
-  SET_SELECTED_CABIN: "SET_SELECTED_CABIN",
-  SET_COMMENT: "SET_COMMENT",
-  CLEAR_FORM: "CLEAR_FORM"
-};
-
-const formReducer = (state, action) => {
-  switch (action.type) {
-    case formActions.SET_CABINS:
-      return { ...state, cabins: action.payload };
-    case formActions.SET_SELECTED_CABIN:
-      return { ...state, selectedCabin: action.payload };
-    case formActions.SET_FROM_DATE:
-      return { ...state, fromDate: action.payload };
-    case formActions.SET_TO_DATE:
-      return { ...state, toDate: action.payload };
-    case formActions.SET_COMMENT:
-      return { ...state, comment: action.payload };
-    case formActions.CLEAR_FORM:
-      return { ...initalFormState, cabins: state.cabins };
-    default:
-      return { ...state };
-  }
-};
-
-const initalFormState = {
-  cabins: [],
-  selectedCabin: {
-    key: 0,
-    text: "Velg koie"
-  },
-  fromDate: new Date(),
-  toDate: addDays(new Date(), 1),
-  comment: ""
-};
-
 const AddClosing = ({ isLoading, handleAddClosing, handleError }) => {
-  const [state, dispatch] = useReducer(formReducer, initalFormState);
+  const initialState = {
+    selectedCabin: {
+      key: 0,
+      text: "Velg koie"
+    },
+    fromDate: new Date(),
+    toDate: addDays(new Date(), 1),
+    comment: ""
+  };
+
+  const [cabins, setCabins] = useState([]);
+  const [state, setState] = useState(initialState);
 
   useAbortableRequest(
     "/api/cabin/",
@@ -61,7 +33,7 @@ const AddClosing = ({ isLoading, handleAddClosing, handleError }) => {
       const cabins = response.data.results.map(cabin => {
         return { key: cabin.id, text: cabin.name };
       });
-      dispatch({ type: formActions.SET_CABINS, payload: cabins });
+      setCabins(cabins);
     },
     handleError
   );
@@ -71,19 +43,15 @@ const AddClosing = ({ isLoading, handleAddClosing, handleError }) => {
       <h2>Steng en koie:</h2>
       <ComboBox
         autoComplete="on"
-        options={state.cabins}
+        options={cabins}
         placeholder="Select or type an option"
         text={state.selectedCabin.text}
-        onChange={(_, o) =>
-          dispatch({ type: formActions.SET_SELECTED_CABIN, payload: o })
-        }
+        onChange={(_, cabin) => setState({ ...state, selectedCabin: cabin })}
       />
       <DatePicker
         label="Fra"
         value={state.fromDate}
-        onSelectDate={d =>
-          dispatch({ type: formActions.SET_FROM_DATE, payload: d })
-        }
+        onSelectDate={date => setState({ ...state, fromDate: date })}
         strings={datePickerStrings}
         firstDayOfWeek={DayOfWeek.Monday}
         formatDate={d => format(d, "dddd D MMM YYYY", { locale: nb })}
@@ -92,9 +60,7 @@ const AddClosing = ({ isLoading, handleAddClosing, handleError }) => {
       <DatePicker
         label="Til"
         value={state.toDate}
-        onSelectDate={d =>
-          dispatch({ type: formActions.SET_TO_DATE, payload: d })
-        }
+        onSelectDate={date => setState({ ...state, toDate: date })}
         minDate={addDays(state.fromDate, 1)}
         string={datePickerStrings}
         firstDayOfWeek={DayOfWeek.Monday}
@@ -102,9 +68,7 @@ const AddClosing = ({ isLoading, handleAddClosing, handleError }) => {
       />
       <TextField
         value={state.comment}
-        onChange={e =>
-          dispatch({ type: formActions.SET_COMMENT, payload: e.target.value })
-        }
+        onChange={e => setState({ ...state, comment: e.target.value })}
         label="Kommentar"
       />
       <PrimaryButton
@@ -115,9 +79,7 @@ const AddClosing = ({ isLoading, handleAddClosing, handleError }) => {
             state.fromDate,
             state.toDate,
             state.comment,
-            () => {
-              dispatch({ type: formActions.CLEAR_FORM });
-            }
+            () => setState(initialState)
           );
         }}
         iconProps={isLoading ? { iconName: "Hourglass" } : { iconName: "Save" }}
