@@ -5,21 +5,26 @@ const compose = (...funcs) => {
 };
 
 const useMiddleware = (reducer, initalState, ...middlewares) => {
-  if (typeof reducer !== "function") {
-    throw new Error("Expected the reducer to be a function.");
-  }
   const [state, setState] = useState(initalState);
 
-  const dispatch = action => {
-    const nextState = reducer(state, action);
-    setState(nextState);
-    return action;
-  };
-  const store = { getState: () => state, dispatch };
-  const chain = middlewares.map(middleware => middleware(store));
+  const createStore = () => {
+    let currentState = state;
 
-  const wrappedDispatch = compose(...chain)(store.dispatch);
-  return [state, wrappedDispatch];
+    const getState = () => currentState;
+
+    const dispatch = action => {
+      const nextState = reducer(state, action);
+      currentState = nextState;
+      setState(nextState);
+      return action;
+    };
+    return { getState, dispatch };
+  };
+
+  const store = createStore();
+  const chain = middlewares.map(middleware => middleware(store));
+  const dispatch = compose(...chain)(store.dispatch);
+  return [state, dispatch];
 };
 
 export default useMiddleware;
