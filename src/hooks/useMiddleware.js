@@ -7,9 +7,13 @@ const compose = (...funcs) => {
 const applyMiddleware = middlewares => {
   return createStore => (...args) => {
     const store = createStore(...args);
-    const chain = middlewares.map(middleware => middleware(store));
-    let dispatch = store.dispatch;
-    dispatch = compose(...chain)(store.dispatch);
+    const chain = middlewares.map(middleware =>
+      middleware({
+        getState: store.getState,
+        dispatch: action => dispatch(action)
+      })
+    );
+    const dispatch = compose(...chain)(store.dispatch);
     return { ...store, dispatch };
   };
 };
