@@ -37,15 +37,13 @@ const restrictedListThursday = computeRestrictedDates(isThursday);
 const ExtendedPeriod = props => {
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [fetchExtensions, setFetchExtensions] = useState(true);
 
   const [description, setDescription] = useState("");
   const [reservationDate, setReservationDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [extensions, setExtensions] = useState([]);
 
-  useAbortableRequest(
-    "GET",
+  const refetchExtendedPeriods = useAbortableRequest(
     "/api/extended-periods",
     response => {
       setExtensions(response.data.results);
@@ -54,8 +52,7 @@ const ExtendedPeriod = props => {
     () => {
       setShowError(true);
       setIsLoading(false);
-    },
-    [fetchExtensions]
+    }
   );
 
   const addExtension = async () => {
@@ -69,10 +66,10 @@ const ExtendedPeriod = props => {
         description
       };
       await axios.post(`${BASE_URL}/api/extended-periods/`, payload);
+      await refetchExtendedPeriods();
       setDescription("");
       setReservationDate(null);
       setEndDate(null);
-      setFetchExtensions(e => !e);
     } catch (_) {
       setShowError(true);
     }
@@ -83,7 +80,7 @@ const ExtendedPeriod = props => {
     setIsLoading(true);
     try {
       await axios.delete(`${BASE_URL}/api/extended-periods/${id}/`);
-      setFetchExtensions(e => !e);
+      await refetchExtendedPeriods();
     } catch (_) {
       setShowError(true);
     }

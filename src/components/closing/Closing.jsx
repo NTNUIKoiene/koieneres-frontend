@@ -5,7 +5,7 @@ import { useReducer } from "react";
 import { useAbortableRequest } from "../../hooks";
 import Header from "../Header";
 import AddClosing from "./AddClosing";
-import { ExistingClosingCard, LoadingCard } from "./ExistingClosingCard";
+import { ClosedCabinCard, LoadingCard } from "./ClosedCabinCard";
 import styles from "./Closing.module.css";
 import { MessageBar, MessageBarType } from "office-ui-fabric-react";
 import axios from "axios";
@@ -14,15 +14,13 @@ import { BASE_URL } from "../../config";
 const initalState = {
   isLoading: true,
   showError: false,
-  fetchExistingClosings: true,
-  existingClosings: []
+  closedCabins: []
 };
 
 const actions = {
   SET_IS_LOADING: "SET_IS_LOADING",
   SET_SHOW_ERROR: "SET_SHOW_ERROR",
-  SET_EXISTING_CLOSINGS: "SET_EXISTING_CLOSINGS",
-  FETCH_EXISTING_CLOSINGS: "FETCH_EXISTING_CLOSINGS"
+  SET_CLOSED_CABINS: "SET_CLOSED_CABINS"
 };
 
 const reducer = (state, action) => {
@@ -31,10 +29,8 @@ const reducer = (state, action) => {
       return { ...state, isLoading: action.payload };
     case actions.SET_SHOW_ERROR:
       return { ...state, showError: action.payload };
-    case actions.SET_EXISTING_CLOSINGS:
-      return { ...state, existingClosings: action.payload };
-    case actions.FETCH_EXISTING_CLOSINGS:
-      return { ...state, fetchExistingClosings: !state.fetchExistingClosings };
+    case actions.SET_CLOSED_CABINS:
+      return { ...state, closedCabins: action.payload };
     default:
       return { ...state };
   }
@@ -43,12 +39,11 @@ const reducer = (state, action) => {
 const Closing = props => {
   const [state, dispatch] = useReducer(reducer, initalState);
 
-  useAbortableRequest(
-    "GET",
+  const refetchClosedCabins = useAbortableRequest(
     "/api/cabin-closings/",
     response => {
       dispatch({
-        type: actions.SET_EXISTING_CLOSINGS,
+        type: actions.SET_CLOSED_CABINS,
         payload: response.data.results
       });
       dispatch({ type: actions.SET_IS_LOADING, payload: false });
@@ -56,15 +51,14 @@ const Closing = props => {
     () => {
       dispatch({ type: actions.SET_SHOW_ERROR, payload: true });
       dispatch({ type: actions.SET_IS_LOADING, payload: false });
-    },
-    [state.fetchExistingClosings]
+    }
   );
 
   const deleteClosing = async id => {
     dispatch({ type: actions.SET_IS_LOADING, payload: true });
     try {
       await axios.delete(`${BASE_URL}/api/cabin-closings/${id}/`);
-      dispatch({ type: actions.FETCH_EXISTING_CLOSINGS });
+      await refetchClosedCabins();
     } catch (_) {
       dispatch({ type: actions.SET_SHOW_ERROR, payload: true });
     }
@@ -86,21 +80,21 @@ const Closing = props => {
         toDate: format(toDate, "YYYY-MM-DD"),
         comment: comment
       });
+      await refetchClosedCabins();
       callback();
-      dispatch({ type: actions.FETCH_EXISTING_CLOSINGS });
     } catch (_) {
       dispatch({ type: actions.SET_SHOW_ERROR, payload: true });
     }
   };
 
   const loadingIndicators = Array(
-    state.existingClosings.length === 0 ? 3 : state.existingClosings.length
+    state.closedCabins.length === 0 ? 3 : state.closedCabins.length
   )
     .fill()
     .map((_, k) => <LoadingCard key={k} />);
 
-  let existingClosingCards = state.existingClosings.map((c, k) => (
-    <ExistingClosingCard
+  let closedCabinCards = state.closedCabins.map((c, k) => (
+    <ClosedCabinCard
       key={k}
       closing={c}
       deleteClick={() => deleteClosing(c.id)}
@@ -108,8 +102,8 @@ const Closing = props => {
     />
   ));
 
-  if (existingClosingCards.length === 0) {
-    existingClosingCards = <h3>Ingen koier er planlagt stengt.</h3>;
+  if (closedCabinCards.length === 0) {
+    closedCabinCards = <h3>Ingen koier er planlagt stengt.</h3>;
   }
 
   return (
@@ -133,7 +127,7 @@ const Closing = props => {
         />
         <div className={styles.dataContainer}>
           <h2>Eksisterende stenginger:</h2>
-          {state.isLoading ? loadingIndicators : existingClosingCards}
+          {state.isLoading ? loadingIndicators : closedCabinCards}
         </div>
       </div>
     </div>

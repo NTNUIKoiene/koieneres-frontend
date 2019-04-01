@@ -35,7 +35,7 @@ const formReducer = (state, action) => {
     case formActions.SET_COMMENT:
       return { ...state, comment: action.payload };
     case formActions.CLEAR_FORM:
-      return { ...initalFormState };
+      return { ...initalFormState, cabins: state.cabins };
     default:
       return { ...state };
   }
@@ -56,7 +56,6 @@ const AddClosing = ({ isLoading, handleAddClosing, handleError }) => {
   const [state, dispatch] = useReducer(formReducer, initalFormState);
 
   useAbortableRequest(
-    "GET",
     "/api/cabin/",
     response => {
       const cabins = response.data.results.map(cabin => {
@@ -64,8 +63,7 @@ const AddClosing = ({ isLoading, handleAddClosing, handleError }) => {
       });
       dispatch({ type: formActions.SET_CABINS, payload: cabins });
     },
-    handleError,
-    []
+    handleError
   );
 
   return (
