@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import Login from "./components/Login";
 import Booking from "./components/booking/Booking";
-import Reservations from "./components/Reservations";
+import Reservations from "./components/reservations/Reservations";
 import NotFound from "./components/NotFound";
 import Closing from "./components/closing/Closing";
 import ExtendedPeriod from "./components/ExtendedPeriod";

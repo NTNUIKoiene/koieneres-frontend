@@ -1,3 +1,9 @@
+.reservationContainer {
+  padding-top: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
 .cardcontainer {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -7,7 +13,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 10px;
 }
 
 .filterContainer {
