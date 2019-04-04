@@ -1,3 +1,3 @@
-const BASE_URL = "https://koieneres-api-dev.appspot.com";
+const BASE_URL = "https://api.koiene.no";
 
 export { BASE_URL };
