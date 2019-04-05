@@ -1,8 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
 import AdBlockerExtensionDetector from "@schibstedspain/sui-ad-blocker-extension-detector";
 import { useState, useEffect } from "react";
-import Header from "../Header";
 import ReservationCard from "./ReservationCard";
 import LoadingCard from "./LoadingCard";
 import styles from "./Reservations.module.css";
@@ -18,7 +16,7 @@ import {
 import axios from "axios";
 import { BASE_URL } from "../../config";
 
-const Reservations = props => {
+const Reservations = () => {
   // Data
   const [reservations, setReservations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -95,7 +93,6 @@ const Reservations = props => {
 
   return (
     <div>
-      <Header currentPage={props.location.pathname} />
       {showError && (
         <MessageBar
           className={styles.error}
@@ -175,12 +172,6 @@ const Reservations = props => {
       </div>
     </div>
   );
-};
-
-Reservations.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string.isRequired
-  }).isRequired
 };
 
 export default Reservations;

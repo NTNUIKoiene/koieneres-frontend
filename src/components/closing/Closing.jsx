@@ -1,9 +1,7 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { format } from "date-fns";
 import { useState, useCallback } from "react";
 import { useAbortableRequest } from "../../hooks";
-import Header from "../Header";
 import AddClosing from "./AddClosing";
 import { ClosedCabinCard, LoadingCard } from "./ClosedCabinCard";
 import styles from "./Closing.module.css";
@@ -11,7 +9,7 @@ import { MessageBar, MessageBarType } from "office-ui-fabric-react";
 import axios from "axios";
 import { BASE_URL } from "../../config";
 
-const Closing = ({ location }) => {
+const Closing = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showError, setShowError] = useState(false);
   const [closedCabins, setClosedCabins] = useState([]);
@@ -78,7 +76,6 @@ const Closing = ({ location }) => {
 
   return (
     <div>
-      <Header currentPage={location.pathname} />
       <div className={styles.container}>
         {showError && (
           <MessageBar
@@ -100,12 +97,6 @@ const Closing = ({ location }) => {
       </div>
     </div>
   );
-};
-
-Closing.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string.isRequired
-  }).isRequired
 };
 
 export default Closing;
