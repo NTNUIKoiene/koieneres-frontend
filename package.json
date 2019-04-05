@@ -11,10 +11,10 @@
     "moment": "^2.22.2",
     "office-ui-fabric-react": "^6.157.0",
     "prettier": "^1.16.4",
-    "react": "^16.7.0-alpha.2",
-    "react-dom": "^16.7.0-alpha.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.0",
-    "react-scripts": "^2.1.5"
+    "react-scripts": "^2.1.8"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
@@ -38,7 +38,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "firebase-tools": "^6.4.0"
+    "firebase-tools": "^6.5.3"
   },
   "husky": {
     "hooks": {
