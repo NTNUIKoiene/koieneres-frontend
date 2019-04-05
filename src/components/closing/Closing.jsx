@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useAbortableRequest } from "../../hooks";
 import Header from "../Header";
 import AddClosing from "./AddClosing";
@@ -38,28 +38,24 @@ const Closing = ({ location }) => {
     }
   };
 
-  const addClosing = async (
-    selectedCabin,
-    fromDate,
-    toDate,
-    comment,
-    callback
-  ) => {
-    setIsLoading(true);
-    setShowError(false);
-    try {
-      await axios.post(`${BASE_URL}/api/cabin-closings/`, {
-        cabin: selectedCabin.key,
-        fromDate: format(fromDate, "YYYY-MM-DD"),
-        toDate: format(toDate, "YYYY-MM-DD"),
-        comment: comment
-      });
-      await refetchClosedCabins();
-      callback();
-    } catch (_) {
-      setShowError(true);
+  const addClosing = useCallback(
+    async (selectedCabin, fromDate, toDate, comment, callback) => {
+      setIsLoading(true);
+      setShowError(false);
+      try {
+        await axios.post(`${BASE_URL}/api/cabin-closings/`, {
+          cabin: selectedCabin.key,
+          fromDate: format(fromDate, "YYYY-MM-DD"),
+          toDate: format(toDate, "YYYY-MM-DD"),
+          comment: comment
+        });
+        await refetchClosedCabins();
+        callback();
+      } catch (_) {
+        setShowError(true);
+      }
     }
-  };
+  );
 
   const loadingIndicators = Array(
     closedCabins.length === 0 ? 3 : closedCabins.length
