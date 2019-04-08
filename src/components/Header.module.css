@@ -2,11 +2,13 @@
   margin-top: 0;
   padding: 20px;
   margin-bottom: 0;
+  user-select: none;
 }
 
 .nav {
   margin: 0;
   padding-left: 20;
+  user-select: none;
 }
 
 .nav ul {
@@ -46,9 +48,20 @@
   float: right;
 }
 
-.mobileHeaderText {
+.burger {
+  padding-right: 45px;
+  color: white;
   display: none;
-  padding: 10px;
+}
+
+.burger:hover {
+  color: white;
+}
+
+.headerTextContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 @media screen and (max-width: 750px) {
@@ -58,10 +71,13 @@
   .rightLink {
     float: left !important;
   }
-  .headertext {
+  .burger {
+    display: inline-flex;
+  }
+  .displayNone {
     display: none;
   }
-  .mobileHeaderText {
-    display: block;
+  .headertext {
+    font-size: 0.8em;
   }
 }
