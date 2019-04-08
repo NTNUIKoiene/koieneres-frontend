@@ -40,9 +40,21 @@
   padding: 10px;
 }
 
-@media only screen and (max-width: 768px) {
+@media screen and (max-width: 750px) {
   .cardcontainer {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
+  }
+
+  .filterContainer {
+    flex-wrap: wrap;
+  }
+
+  .toolbar {
+    flex-direction: column;
+  }
+
+  .countLabel {
+    display: none;
   }
 }

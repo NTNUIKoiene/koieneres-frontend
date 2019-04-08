@@ -127,7 +127,7 @@ const Reservations = () => {
               checked={onlyUnPaid}
               onChange={(_, c) => setOnlyUnPaid(c)}
             />
-            <Label>{count} treff</Label>
+            <Label className={styles.countLabel}>{count} treff</Label>
           </div>
           <div className={styles.paginationContainer}>
             <DefaultButton
