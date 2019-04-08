@@ -34,11 +34,6 @@
   margin-right: 15px;
 }
 
-.helpButton {
-  padding-top: 15px;
-  color: white !important;
-}
-
 .modal {
   padding: 20px;
   min-width: 50vw;
@@ -50,12 +45,12 @@
 
 .burger {
   padding-right: 45px;
-  color: white;
+  color: white !important;
   display: none;
 }
 
 .burger:hover {
-  color: white;
+  color: white !important;
 }
 
 .headerTextContainer {
@@ -68,15 +63,19 @@
   li {
     width: 100%;
   }
+
   .rightLink {
     float: left !important;
   }
+
   .burger {
     display: inline-flex;
   }
+
   .displayNone {
     display: none;
   }
+
   .headertext {
     font-size: 0.8em;
   }
