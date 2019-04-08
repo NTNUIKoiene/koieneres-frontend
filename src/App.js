@@ -11,7 +11,6 @@ import { Spinner, SpinnerSize } from "office-ui-fabric-react";
 import Auth from "./auth";
 import Login from "./components/Login";
 import NotFound from "./components/NotFound";
-import { default as BookingHelp } from "./components/booking/Help";
 
 const Reservations = lazy(() =>
   import("./components/reservations/Reservations")
