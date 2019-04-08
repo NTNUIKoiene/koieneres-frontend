@@ -1,28 +1,38 @@
-import React, { Component } from "react";
+import React, { Suspense, lazy } from "react";
 import PropTypes from "prop-types";
+import Header from "./components/Header";
 import {
   BrowserRouter as Router,
   Route,
   Redirect,
   Switch
 } from "react-router-dom";
-import Login from "./components/Login";
-import Booking from "./components/booking/Booking";
-import Reservations from "./components/reservations/Reservations";
-import NotFound from "./components/NotFound";
-import Closing from "./components/closing/Closing";
-import ExtendedPeriod from "./components/ExtendedPeriod";
+import { Spinner, SpinnerSize } from "office-ui-fabric-react";
 import Auth from "./auth";
+import Login from "./components/Login";
+import NotFound from "./components/NotFound";
+
+const Reservations = lazy(() =>
+  import("./components/reservations/Reservations")
+);
+const Booking = lazy(() => import("./components/booking/Booking"));
+const ExtendedPeriod = lazy(() => import("./components/ExtendedPeriod"));
+const Closing = lazy(() => import("./components/closing/Closing"));
 
 const authModule = new Auth();
 
-class App extends Component {
-  render() {
-    return (
-      <Router>
+const App = () => (
+  <>
+    <Router>
+      <Header />
+      <Suspense
+        fallback={
+          <Spinner style={{ marginTop: 50 }} size={SpinnerSize.large} />
+        }
+      >
         <Switch>
-          <PrivateRoute path="/reservations" component={Reservations} />
           <PrivateRoute path="/booking" component={Booking} />
+          <PrivateRoute path="/reservations" component={Reservations} />
           <PrivateRoute path="/closing" component={Closing} />
           <PrivateRoute path="/extendedperiod" component={ExtendedPeriod} />
           <Route
@@ -36,10 +46,10 @@ class App extends Component {
           />
           <Route component={NotFound} />
         </Switch>
-      </Router>
-    );
-  }
-}
+      </Suspense>
+    </Router>
+  </>
+);
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
@@ -60,7 +70,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 );
 
 PrivateRoute.propTypes = {
-  component: PropTypes.func.isRequired
+  component: Route.propTypes.component
 };
 
 const Logout = props => {

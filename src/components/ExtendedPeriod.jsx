@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
-import Header from "./Header";
 import {
   MessageBar,
   MessageBarType,
@@ -34,7 +32,7 @@ const computeRestrictedDates = acceptFn => {
 const restrictedListWednesday = computeRestrictedDates(isWednesday);
 const restrictedListThursday = computeRestrictedDates(isThursday);
 
-const ExtendedPeriod = props => {
+const ExtendedPeriod = () => {
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -88,7 +86,6 @@ const ExtendedPeriod = props => {
 
   return (
     <div>
-      <Header currentPage={props.location.pathname} />
       <div className={styles.container}>
         {showError && (
           <MessageBar
@@ -174,12 +171,6 @@ const ExtendedPeriod = props => {
       </div>
     </div>
   );
-};
-
-ExtendedPeriod.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string.isRequired
-  }).isRequired
 };
 
 export default ExtendedPeriod;

@@ -1,7 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { useState, useReducer, useEffect } from "react";
-import Header from "../Header";
 import styles from "./Booking.module.css";
 import { FontClassNames, ColorClassNames } from "@uifabric/styling";
 import { datePickerStrings } from "../../utils/DatePickerStrings";
@@ -25,7 +23,6 @@ import {
 } from "office-ui-fabric-react";
 import BedSelector from "./BedSelector";
 import Cell from "./Cell";
-import Help from "./Help";
 import Confirmation from "./Confirmation";
 import {
   ContactInfo,
@@ -64,7 +61,7 @@ const selectedDatesReducer = (state, action) => {
   }
 };
 
-const Booking = props => {
+const Booking = () => {
   // General state
   const [errorText, setErrorText] = useState("");
   const userConfig = useUserConfig();
@@ -255,10 +252,6 @@ const Booking = props => {
   return (
     <>
       <div>
-        <Header
-          currentPage={props.location.pathname}
-          helpComponent={<Help />}
-        />
         {errorText.length > 0 && (
           <MessageBar
             messageBarType={MessageBarType.error}
@@ -413,12 +406,6 @@ const Booking = props => {
       </div>
     </>
   );
-};
-
-Booking.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string.isRequired
-  }).isRequired
 };
 
 export default Booking;
