@@ -32,3 +32,15 @@
 .info > div {
   margin-top: 5px;
 }
+
+@media screen and (max-width: 750px) {
+  .container {
+    padding: 15px;
+    grid-gap: 15px;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "error"
+      "add"
+      "data";
+  }
+}
