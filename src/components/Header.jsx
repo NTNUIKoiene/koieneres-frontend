@@ -67,6 +67,7 @@ const Header = ({ location: { pathname } }) => {
           {headerPaths.map(p => (
             <li key={p.pathname}>
               <Link
+                onClick={() => setExpanded(false)}
                 className={[
                   ColorClassNames.themeLighterAlt,
                   ColorClassNames.themeLightBackgroundHover,
