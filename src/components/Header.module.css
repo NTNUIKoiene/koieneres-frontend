@@ -44,9 +44,9 @@
 }
 
 .burger {
-  padding-right: 45px;
+  padding-right: 45px 1 !important;
   color: white !important;
-  display: none;
+  display: none !important;
 }
 
 .burger:hover {
