@@ -44,7 +44,7 @@
 }
 
 .burger {
-  padding-right: 45px 1 !important;
+  padding-right: 45px !important;
   color: white !important;
   display: none !important;
 }
@@ -69,11 +69,11 @@
   }
 
   .burger {
-    display: inline-flex;
+    display: inline-flex !important;
   }
 
   .displayNone {
-    display: none;
+    display: none !important;
   }
 
   .headertext {
