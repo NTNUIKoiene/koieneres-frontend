@@ -44,9 +44,9 @@
 }
 
 .burger {
-  padding-right: 45px;
+  padding-right: 45px !important;
   color: white !important;
-  display: none;
+  display: none !important;
 }
 
 .burger:hover {
@@ -69,11 +69,11 @@
   }
 
   .burger {
-    display: inline-flex;
+    display: inline-flex !important;
   }
 
   .displayNone {
-    display: none;
+    display: none !important;
   }
 
   .headertext {
