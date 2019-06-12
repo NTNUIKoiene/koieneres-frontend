@@ -38,7 +38,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "firebase-tools": "^6.5.3"
+    "firebase-tools": "^7.0.0"
   },
   "husky": {
     "hooks": {
