@@ -6,6 +6,7 @@ import styles from "./Header.module.css";
 import { IconButton } from "office-ui-fabric-react";
 
 const Header = ({ location: { pathname } }) => {
+  const [expanded, setExpanded] = useState(false);
   const headerPaths = [
     {
       pathname: "/booking/",
@@ -28,7 +29,6 @@ const Header = ({ location: { pathname } }) => {
   if (!headerPaths.map(p => p.pathname).includes(pathname)) {
     return null;
   }
-  const [expanded, setExpanded] = useState(false);
 
   return (
     <div>
