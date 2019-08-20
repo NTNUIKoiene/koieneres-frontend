@@ -31,17 +31,16 @@ const Login = props => {
     }
   };
 
-  const refreshToken = async () => {
-    const response = await props.auth.refresh();
-    if (response) {
-      setRedirectToReferrer(true);
-      // props.history.push(from.pathname);
-    }
-  };
-
   useEffect(() => {
+    const refreshToken = async () => {
+      const response = await props.auth.refresh();
+      if (response) {
+        setRedirectToReferrer(true);
+        // props.history.push(from.pathname);
+      }
+    };
     refreshToken();
-  }, []);
+  }, [props.auth]);
 
   if (redirectToReferrer || props.auth.authenticated) {
     return <Redirect to={from} />;

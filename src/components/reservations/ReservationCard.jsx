@@ -14,7 +14,6 @@ import { useState } from "react";
 import axios from "axios";
 
 const ReservationCard = ({ reservation, reload }) => {
-  if (reservation.reservationItems.length === 0) return null;
   const {
     id,
     name,
@@ -80,6 +79,7 @@ const ReservationCard = ({ reservation, reload }) => {
     reload();
   };
 
+  if (reservation.reservationItems.length === 0) return null;
   return (
     <div>
       <Modal isOpen={editModalOpen} onDismiss={() => setEditModalOpen(false)}>

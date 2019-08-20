@@ -1,6 +1,6 @@
 import React from "react";
 import AdBlockerExtensionDetector from "@schibstedspain/sui-ad-blocker-extension-detector";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ReservationCard from "./ReservationCard";
 import LoadingCard from "./LoadingCard";
 import styles from "./Reservations.module.css";
@@ -52,7 +52,7 @@ const Reservations = () => {
     }
   };
 
-  const deriveParamsFromState = () => {
+  const deriveParamsFromState = useCallback(() => {
     let params = { limit: resultsPerPage };
     if (onlyFuture) {
       params = { ...params, after_date: `${format(new Date(), "YYYY-MM-DD")}` };
@@ -64,14 +64,14 @@ const Reservations = () => {
       params = { ...params, id: reservationNumber };
     }
     return params;
-  };
+  }, [onlyFuture, onlyUnPaid, reservationNumber]);
 
   useEffect(() => {
     fetchReservations(
       `${BASE_URL}/api/reservationdata/`,
       deriveParamsFromState()
     );
-  }, [onlyFuture, onlyUnPaid]);
+  }, [deriveParamsFromState, onlyFuture, onlyUnPaid]);
 
   const loadingIndicators = Array(resultsPerPage)
     .fill()

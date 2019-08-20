@@ -41,6 +41,7 @@ export default function useAbortableRequest(
       source.cancel();
       isMounted.current = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [effectCount]);
 
   return () => {
