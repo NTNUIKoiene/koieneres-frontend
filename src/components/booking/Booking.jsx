@@ -97,7 +97,7 @@ const Booking = () => {
 
   useEffect(() => {
     refetchReservationsStatus();
-  }, [fromDate, toDate]);
+  }, [fromDate, refetchReservationsStatus, toDate]);
 
   const [selectedDates, dispatchSelectedDates] = useReducer(
     selectedDatesReducer,
