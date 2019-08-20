@@ -97,7 +97,8 @@ const Booking = () => {
 
   useEffect(() => {
     refetchReservationsStatus();
-  }, [fromDate, refetchReservationsStatus, toDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromDate, toDate]);
 
   const [selectedDates, dispatchSelectedDates] = useReducer(
     selectedDatesReducer,

@@ -52,7 +52,8 @@ const Closing = () => {
       } catch (_) {
         setShowError(true);
       }
-    }
+    },
+    [refetchClosedCabins]
   );
 
   const loadingIndicators = Array(
