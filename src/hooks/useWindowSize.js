@@ -10,12 +10,13 @@ const useWindowSize = () => {
 
   const [size, setSize] = useState(getSize());
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleResize = () => setSize(getSize());
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [handleResize]);
 
   return size;
 };
