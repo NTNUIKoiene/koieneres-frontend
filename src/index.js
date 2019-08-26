@@ -5,6 +5,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { loadTheme } from "office-ui-fabric-react";
 import { initializeIcons } from "@uifabric/icons";
+import * as Sentry from "@sentry/browser";
 
 loadTheme({
   palette: {
@@ -29,10 +30,14 @@ loadTheme({
     neutralPrimary: "#333333",
     neutralDark: "#272727",
     black: "#1d1d1d",
-    white: "#ffffff",
-  },
+    white: "#ffffff"
+  }
 });
 initializeIcons();
+
+Sentry.init({
+  dsn: "https://65f5243d7aa242278142f7638fb065ff@sentry.io/1542320"
+});
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
