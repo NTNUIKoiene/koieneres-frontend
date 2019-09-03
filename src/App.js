@@ -18,6 +18,7 @@ const Reservations = lazy(() =>
 const Booking = lazy(() => import("./components/booking/Booking"));
 const ExtendedPeriod = lazy(() => import("./components/ExtendedPeriod"));
 const Closing = lazy(() => import("./components/closing/Closing"));
+const Receipt = lazy(() => import("./components/Receipt"));
 
 const authModule = new Auth();
 
@@ -35,6 +36,7 @@ const App = () => (
           <PrivateRoute path="/reservations" component={Reservations} />
           <PrivateRoute path="/closing" component={Closing} />
           <PrivateRoute path="/extendedperiod" component={ExtendedPeriod} />
+          <Route path="/receipt/:id" component={Receipt} />
           <Route
             path="/logout"
             render={props => <Logout {...props} auth={authModule} />}
