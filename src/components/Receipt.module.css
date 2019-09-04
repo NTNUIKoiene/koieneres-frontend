@@ -1,4 +1,38 @@
 .page {
   width: 210mm;
   margin: auto;
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+@media print {
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+}
+
+.page > h1,
+h2,
+h3 {
+  color: black;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.printButton {
+  composes: no-print;
+}
+
+.page table {
+  font-family: "Courier New", Courier, monospace;
+  width: 100%;
+}
+
+.page td {
+  text-align: center;
+}
+
+.totalPrice {
+  margin: 3em 0;
+}
+.barcode {
+  margin-top: 5em;
 }
