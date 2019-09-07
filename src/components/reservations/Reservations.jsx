@@ -1,6 +1,6 @@
 import React from "react";
 import AdBlockerExtensionDetector from "@schibstedspain/sui-ad-blocker-extension-detector";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ReservationCard from "./ReservationCard";
 import LoadingCard from "./LoadingCard";
 import styles from "./Reservations.module.css";
@@ -35,30 +35,24 @@ const Reservations = () => {
   const [pageCount, setpageCount] = useState(1);
   const [page, setpage] = useState(1);
 
-  const didCancel = useRef(false);
-
   const fetchReservations = async (url, params) => {
     try {
       setShowError(false);
       setIsLoading(true);
       const data = (await axios.get(url, { params })).data;
-      if (!didCancel.current) {
-        setReservations(data.results);
-        setNext(data.next);
-        setPrevious(data.previous);
-        setCount(data.count);
-        setpageCount(Math.ceil(data.count / resultsPerPage));
-        setIsLoading(false);
-      }
+      setReservations(data.results);
+      setNext(data.next);
+      setPrevious(data.previous);
+      setCount(data.count);
+      setpageCount(Math.ceil(data.count / resultsPerPage));
     } catch (_) {
-      if (!didCancel.current) {
-        setShowError(true);
-        setIsLoading(false);
-      }
+      setShowError(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const deriveHttpParamsFromState = useCallback(() => {
+  const deriveParamsFromState = useCallback(() => {
     let params = { limit: resultsPerPage };
     if (onlyFuture) {
       params = { ...params, after_date: `${format(new Date(), "YYYY-MM-DD")}` };
@@ -73,19 +67,11 @@ const Reservations = () => {
   }, [onlyFuture, onlyUnPaid, reservationNumber]);
 
   useEffect(() => {
-    didCancel.current = false;
     fetchReservations(
       `${BASE_URL}/api/reservationdata/`,
-      deriveHttpParamsFromState()
+      deriveParamsFromState()
     );
-    return () => {
-      didCancel.current = true;
-    };
-  }, [deriveHttpParamsFromState, onlyFuture, onlyUnPaid]);
-
-  useEffect(() => {
-    setpage(1);
-  }, [setpage, onlyFuture, onlyUnPaid, reservationNumber]);
+  }, [deriveParamsFromState, onlyFuture, onlyUnPaid]);
 
   const loadingIndicators = Array(resultsPerPage)
     .fill()
@@ -98,7 +84,7 @@ const Reservations = () => {
       reload={() => {
         fetchReservations(
           `${BASE_URL}/api/reservationdata/`,
-          deriveHttpParamsFromState()
+          deriveParamsFromState()
         );
         setpage(1);
       }}
@@ -122,6 +108,14 @@ const Reservations = () => {
               placeholder="Reservasjonsnummer"
               value={reservationNumber}
               onChange={e => setReservationNumber(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === "Enter") {
+                  fetchReservations(
+                    `${BASE_URL}/api/reservationdata/`,
+                    deriveParamsFromState()
+                  );
+                }
+              }}
             />
             <Checkbox
               label="Bare fremtidige reservasjoner"
