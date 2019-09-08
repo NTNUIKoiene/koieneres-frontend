@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { BASE_URL } from "../config";
 import styles from "./Receipt.module.css";
@@ -30,16 +30,21 @@ ean: "5901234123457"
 const ReceiptPage = props => {
   const reservationId = props.match.params.id;
   const [reservationData, setReservationData] = useState();
+  const didCancel = useRef(false);
 
   useEffect(() => {
     const getReceiptData = async () => {
       const { data } = await axios.get(
         `${BASE_URL}/api/publicreservationdata/${reservationId}/receipt/`
       );
-      console.log(data);
-      setReservationData(data);
+      if (!didCancel.current) {
+        setReservationData(data);
+      }
     };
     getReceiptData();
+    return () => {
+      didCancel.current = true;
+    };
   }, [reservationId]);
 
   if (!reservationData) return null;
