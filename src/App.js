@@ -23,7 +23,7 @@ const Receipt = lazy(() => import("./components/Receipt"));
 const authModule = new Auth();
 
 const App = () => (
-  <>
+  <React.StrictMode>
     <Router>
       <Header />
       <Suspense
@@ -50,7 +50,7 @@ const App = () => (
         </Switch>
       </Suspense>
     </Router>
-  </>
+  </React.StrictMode>
 );
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
