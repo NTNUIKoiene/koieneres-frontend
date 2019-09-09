@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import styles from "./ReservationCard.module.css";
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
 import {
   DefaultButton,
   PrimaryButton,
@@ -30,7 +31,6 @@ const ReservationCard = ({ reservation, reload }) => {
   const numberOfNights = reservation.reservationItems.length;
   const dates = reservation.reservationItems.map(r => r.date).join(", ");
 
-  const [receiptButtonDisabled, setReceiptButtonDisabled] = useState(false);
   const [markAsPaidDisabled, setMarkAsPaidDisabled] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
 
@@ -42,21 +42,6 @@ const ReservationCard = ({ reservation, reload }) => {
   const [emailState, setEmailState] = useState(email);
   const [isPaidState, setIsPaidState] = useState(isPaid);
   const [shouldPayState, setShouldPayState] = useState(shouldPay);
-
-  const onReceiptClick = async () => {
-    setReceiptButtonDisabled(true);
-    const data = await (await fetch(
-      `${BASE_URL}/api/reservationdata/${id}/receipt/`,
-      {
-        headers: {
-          Authorization: `JWT ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json"
-        }
-      }
-    )).blob();
-    window.open(URL.createObjectURL(data));
-    setReceiptButtonDisabled(false);
-  };
 
   const onEditConfirmClick = async () => {
     await axios.patch(`${BASE_URL}/api/reservationdata/${id}`, {
@@ -192,18 +177,15 @@ const ReservationCard = ({ reservation, reload }) => {
             >
               Rediger
             </DefaultButton>
-            <DefaultButton
-              iconProps={
-                receiptButtonDisabled
-                  ? { iconName: "Hourglass" }
-                  : { iconName: "PDF" }
-              }
-              ariaLabel="Receipt"
-              onClick={onReceiptClick}
-              disabled={receiptButtonDisabled}
-            >
-              Kvittering
-            </DefaultButton>
+            <Link to={`/receipt/${id}`}>
+              <DefaultButton
+                iconProps={{ iconName: "PDF" }}
+                className={styles.receiptBtn}
+                ariaLabel="Receipt"
+              >
+                Kvittering
+              </DefaultButton>
+            </Link>
             {!isPaid && shouldPay && (
               <PrimaryButton
                 iconProps={
