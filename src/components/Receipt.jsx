@@ -35,7 +35,7 @@ const ReceiptPage = props => {
   useEffect(() => {
     const getReceiptData = async () => {
       const { data } = await axios.get(
-        `${BASE_URL}/api/publicreservationdata/${reservationId}/receipt/`
+        `${BASE_URL}/api/reservationdata/${reservationId}/receipt/`
       );
       if (!didCancel.current) {
         setReservationData(data);
